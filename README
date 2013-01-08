@@ -1,0 +1,75 @@
+CDPlayer.app
+============
+
+Introduction
+------------
+CDPlayer is a small CD Audio Player for GNUstep. This application is
+only tested on Linux/GNUstep.
+
+This application is GPL'ed. Read the COPYING file.
+All bugs reports should be sent to Andreas Schik <andreas@schik.de>.
+
+
+How to build CDPlayer.app
+-------------------------
+o You must install libcdio, libcdio_cdda and libcdio_paranoia first. These
+  libraries are needed for reading the CDDA data.
+
+o As CDPlayer uses Cynthiune's output bundles to make the CD audible, you must
+  install Cynthiune before you can build CDPlayer.
+
+o Also Required is Cddb.bundle by Yen-Ju Chen. This bundle is included with
+  CDPlayer and built automatically. See below for details.
+
+o To build CDPlayer simply do the following:
+	make
+  This will build CDPlayer and the AudioCD and Cddb bundles.
+
+o To install CDPlayer in your global GNUstep directory do:
+	make install
+
+  This will install CDPlayer in $(GNUSTEP_LOCAL_ROOT)/Applications and the
+  AudioCD and Cddb bundles in $(GNUSTEP_SYSTEM_ROOT)/Library/Bundles.
+  The AudioCD bundle does all the audio CD handling.
+
+
+GNUstep system
+--------------
+o CDPlayer 0.6.0 has been tested on GNU/Linux using the following versions
+  of GNUstep:
+
+gnustep-make	1.21
+gnustep-base	1.21
+gnustep-gui	0.19
+gnustep-back	0.19
+
+
+Cynthiune
+---------
+CDPlayer has been developed and tested against Cynthiune 1.0.0.
+Cynthiune is part of GAP, which can be found here:
+
+http://gap.nongnu.org/
+
+CDDB/FreeDB suport
+------------------
+CDPlayer uses the Cddb bundle from Yen-Ju Chen
+(http://www.people.virginia.edu/~yc2w/GNUstep/english/) to access FreeDB
+databases. Cddb is integrated with CDPlayer and will automatically
+be built and installed.
+
+The original Cddb bundle project is available here:
+
+http://savannah.nongnu.org/projects/musicbox/
+
+
+Running
+-------
+
+CDPlayer.app uses its own preferences key 'Device' to pass as custom device to
+the AudioCD bundle.
+
+% openapp CDPlayer.app [--Device=<path_to_cd_device>]
+
+If no device is given, AudioCD.bundle will poll all devices for audio CDs. It will
+play the first on, it can find.
