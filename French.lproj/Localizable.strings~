@@ -1,0 +1,153 @@
+/***
+French.lproj/Localizable.strings
+updated by make_strings 2012-06-29 14:45:55 +0200
+add comments above this one
+***/
+
+
+/*** Keys found in multiple places ***/
+
+/* File: FreeDBView.m:151 */
+/* File: TrackList.m:323 */
+/* File: TrackList.m:328 */
+/* File: TrackList.m:333 */
+"OK" = "Ok";
+
+/* File: AudioCD/AudioCD.m:129 */
+/* File: AudioCD/AudioCD.m:142 */
+/* File: AudioCD/AudioCD.m:143 */
+/* File: TrackList.m:79 */
+/* File: TrackList.m:80 */
+/* File: TrackList.m:145 */
+/* File: TrackList.m:146 */
+"Unknown" = "Inconnu";
+
+/* File: Controller.m:165 */
+/* File: Preferences.m:141 */
+"Close" = "Fermer";
+
+
+/*** Unmatched/untranslated keys ***/
+
+/* File: FreeDBView.m:150 */
+/* Flag: untranslated */
+"Can't get the list of public freedb sites.\nMake sure you have internet connection and the connection to the official freedb site (www.freedb.org) works."
+= "Can't get the list of public freedb sites.\nMake sure you have internet connection and the connection to the official freedb site (www.freedb.org) works.";
+
+/* File: Player.m:602 */
+/* Flag: untranslated */
+"Could not write TOC to pasteboard." = "Could not write TOC to pasteboard.";
+
+/* File: Player.m:617 */
+/* Flag: untranslated */
+"Player.alreadyPlaying" = "Player.alreadyPlaying";
+
+/* File: Player.m:626 */
+/* Flag: untranslated */
+"Player.noValidPboardType" = "Player.noValidPboardType";
+
+/* File: Player.m:641 */
+/* Flag: untranslated */
+"Player.tooManyFileNames" = "Player.tooManyFileNames";
+
+/* File: Player.m:649 */
+/* Flag: untranslated */
+"Player.noDeviceNameFound" = "Player.noDeviceNameFound";
+
+/* File: TrackList.m:209 */
+"CD: %@\nTrack: %@" = "CD: %@\nPiste: %@";
+
+/* File: TrackList.m:327 */
+/* Flag: untranslated */
+"Couldn't find any matches." = "Couldn't find any matches.";
+
+
+/*** Strings from AudioCD/AudioCD.m ***/
+/* File: AudioCD/AudioCD.m:130 */
+"Track%d" = "Piste%d";
+
+
+/*** Strings from Controller.m ***/
+/* File: Controller.m:159 */
+"Arrange" = "Arranger";
+/* File: Controller.m:151 */
+"Help" = "Aide";
+/* File: Controller.m:130 */
+"Hide" = "Masquer";
+/* File: Controller.m:141 */
+/* File: Controller.m:110 */
+"Info" = "Informations";
+/* File: Controller.m:143 */
+"Info Panel..." = "Panneau d'informations";
+/* File: Controller.m:162 */
+"Miniaturize" = "Miniaturiser";
+/* File: Controller.m:147 */
+"Preferences..." = "Pr\u00e9f\u00e9rences...";
+/* File: Controller.m:118 */
+"Query CDDB" = "Questionner le CDDB";
+/* File: Controller.m:134 */
+"Quit" = "Quitter";
+/* File: Controller.m:172 */
+/* File: Controller.m:126 */
+"Services" = "Services";
+/* File: Controller.m:114 */
+"Show Track List" = "Montrer Les Pistes";
+/* File: Controller.m:158 */
+/* File: Controller.m:122 */
+"Windows" = "Fen\u00e8tres";
+
+
+/*** Strings from FreeDBView.m ***/
+/* File: FreeDBView.m:149 */
+"Can't get list from internet"
+= "Impossible de t\u00e9l\u00e9charger la liste des sites FreeDB de l'internet";
+
+
+/*** Strings from GeneralView.m ***/
+/* File: GeneralView.m:116 */
+"General" = "G\u00e9n\u00e9ral";
+
+
+/*** Strings from Player.m ***/
+/* File: Player.m:77 */
+"Couldn't find AudioCD bundle." = "Le bundle AudioCD est introuvable.";
+/* File: Player.m:78 */
+"Exit" = "Quitter";
+/* File: Player.m:588 */
+"No Audio CD found." = "Aucune CD trouv\u00e9e.";
+
+
+/*** Strings from Preferences.m ***/
+/* File: Preferences.m:127 */
+"Preferences" = "Pr\u00e9f\u00e9rences";
+/* File: Preferences.m:134 */
+"Save" = "Sauvegarder";
+
+
+/*** Strings from TrackList.m ***/
+/* File: TrackList.m:439 */
+"%@ [Data]" = "%@ [Donn\u00e9es]";
+/* File: TrackList.m:147 */
+"CD" = "CD";
+/* File: TrackList.m:332 */
+"Couldn't find Cddb bundle." = "Le bundle Cddb est introuvable.";
+/* File: TrackList.m:322 */
+"Couldn't read CD information." = "Impossible de lire la CD.";
+/* File: TrackList.m:118 */
+/* File: TrackList.m:84 */
+"No CD" = "Pas de CD";
+/* File: TrackList.m:160 */
+"Track %d" = "Piste %d";
+/* File: TrackList.m:82 */
+"Track List" = "Liste des pistes";
+
+
+/*** Strings from TrackListView.m ***/
+/* File: TrackListView.m:99 */
+"Artist" = "Artiste";
+/* File: TrackListView.m:123 */
+"Duration" = "Dur\u00e9e";
+/* File: TrackListView.m:86 */
+"Nr" = "No";
+/* File: TrackListView.m:111 */
+"Title" = "Titre";

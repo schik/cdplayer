@@ -1,0 +1,20 @@
+/***
+French.lproj/Localizable.strings
+updated by make_strings 2003-01-08 16:25:58 +0100
+add comments above this one
+***/
+
+
+/*** Keys found in multiple places ***/
+
+/* File: AudioCD.m:99 */
+/* File: AudioCDView.m:47 */
+/* File: AudioCDView.m:53 */
+"Audio CD Drives" = "Lecteurs de CD";
+
+
+/*** Strings from AudioCDView.m ***/
+/* File: AudioCDView.m:86 */
+"Add" = "Ajouter";
+/* File: AudioCDView.m:92 */
+"Remove" = "Supprimer";

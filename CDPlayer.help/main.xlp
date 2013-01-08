@@ -1,0 +1,31 @@
+<document>
+
+<header>
+<title>Online Help od CDPlayer</title>
+</header>
+
+<plain name="General Information">
+	<center>
+	    <img src="Logo.tiff">
+	    <br><br>
+	    CDPlayer is a simple program to play audio CDs on your PC.<br>
+	    (c) 1999-2002 ACKyugo <ackyugo@geocities.co.jp><br>
+	    (c) 2002-2011 Andreas Schik.<br><br>
+	    This program is distributed under the GNU Public Licence (GPL).<br>
+	    You should have received a copy of the GNU General Public License
+	    along with this program; if not, write to:<br>
+	    Free Software Foundation, Inc.,<br>
+	    59 Temple Place, Suite 330, Boston, MA  02111-1307  USA<br>
+	    <note>
+	    Website : <url>http://www.andreasheppel.de/en</url>
+	    <br>
+	    Contact : <url>mailto:andreas@schik.de</url>
+	    </note>
+	</center>
+</plain>
+
+<chapter src="HowItWorks.xlp" name="How it works"></chapter>
+<chapter src="Configuration.xlp" name="Configuration"></chapter>
+<chapter src="ToDo.xlp" name="To do ..."></chapter>
+
+</document>

@@ -1,0 +1,6 @@
+- Original author of CDPlayer.app is ACKyugo <ackyugo@geocities.co.jp>.
+- Thanks to Sebastian Reitenbach for making CDPlayer run (again) on
+  OpenBSD.
+- Thanks to Ludovic Marcotte <ludovic@sophos.ca> for some code cleaning.
+- Rob Burns contributed a couple of small fixes (e.g. in localizations).
+- Andrew Lindesay for his icons.

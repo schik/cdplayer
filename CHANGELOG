@@ -1,0 +1,126 @@
+Version 0.6.0
+-------------
+
+- Moved from libaudiocd to libcdio and friends.
+- Use Cynthiune's output backends for audio output.
+- Removed the preference pane for AudioCD.bundle as it no longer
+  has any preferences.
+
+Version 0.5.1
+-------------
+
+- Applied a couple of patches provided by Sebastion Reitenbach
+  to make CDPlayer compile and run on OpenBSD.
+- Fixed bug 1492967
+
+Version 0.5.0
+-------------
+
+- Added the service 'Play CD' that takes the name of a device
+  with an inserted CD to play.
+- Added a local cache for CDDB data. All data loaded from the net
+  is stored automatically to disk and displayed again when a CD is
+  detected.
+- As an alternative to the preferences panel for Preferences.app
+  CDPlayer now also offers a panel for SystemPreferences.app. See
+  README for details about how build this.
+
+Version 0.4.2
+-------------
+
+- Data tracks on a CD are now marked as such.
+- When simply clicking the 'Play' button data tracks should now
+  be skipped.
+- Removed a method from AudioCDProtocol that was not used
+  (-playTrackStart:End:Pos)
+
+Version 0.4.1
+-------------
+
+- Added the capability to directly select a track for playing
+  by double-clicking into the track list.
+- Added the default value 'ShowTrackListOnStartup' to make the
+  track list pop up automatically on startup (no GUI, yet).
+- Fixed some annoyances with the track number display and '<<'
+  '>>' buttons.
+
+Version 0.4.0
+-------------
+
+- Added a service providing the CD's TOC as "AudioCDPboardType".
+- Added FreeDB support using Yen-Ju Chen's Cddb.bundle.
+- Refactored the general settings.
+- Added a settings panel for FreeDB.
+
+Version 0.3.0
+-------------
+
+- Added a primitive track list being able to display the
+  number and duration of tracks.
+- The track list serves as dnd source for the upcoming version
+  of Burn.
+- Added an online help for use with Nicolas Roard's HelpViewer.
+- Cyclic polling of drives is now done in a separate thread
+  in AudioCD.bundle. That makes the whole app more responsive
+  and relieves users of the bundle from having to do the
+  polling themselves.
+- Updated README so as to mention use of Preferences.app.
+- Fixed a displaying bug in Player.m, where first the display
+  would be set to "01 00:00" before the actual status appeared.
+
+Version 0.2.6
+-------------
+
+- Changed gorm files for the prefs panel to fit the new
+  layout (requires gui/back 0.8.3 or higher).
+- Prefs panel no longer fits into older versions of
+  Preferences.app since it is slightly larger (tested
+  with 1.2.99beta).
+- Added German and French versions for the prefs panel.
+
+Version 0.2.5
+-------------
+
+- Added an additional view for the preferences panel that
+  is called in case the nib cannot be loaded.
+
+
+Version 0.2.4
+-------------
+
+- AudioCD's method readTOC returns CDDBID as hex coded string.
+- readTOC returns a mutable dictionary now, so that the
+  caller may add and/or chnge entries.
+
+
+Version 0.2.3
+-------------
+
+- Fixed the GNUmakefiles.
+- Fixed a bug where Preferences.app crashed when the AudioCD
+  domain was not already present in the user defaults.
+
+Version 0.2.2
+-------------
+
+- Added method readTOC to class AudioCD. readTOC returns
+  a dictionary containing all relevant information about the
+  CD such as CDDBID, number of tracks, track info (type,
+  offset, length).
+- AudioCD now checks a list of devices for an inserted audio
+  CD. It will take the first one it can find.
+- The device list can be configured using Preferences.app.
+
+Version 0.2.1
+-------------
+
+- AudioCD has been moved to a separate bundle. Thus the
+  CD playing functions can be used by other programs, too
+  (i.e. Encod or GSburn).
+
+
+Version 0.2.0
+-------------
+
+- Clean up of code, necessary changes to make CDPlayer.app
+  work with recent GNUstep versions.

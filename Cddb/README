@@ -1,0 +1,62 @@
+Cddb - A GNUstep cddb bundle
+-------------------------------------
+This is a GNUstep bundle for cddb access
+It contains:
+Cddb/ as cddb bundle,
+CddbTest/ as the command-line application for test
+
+Cddb/ will install the header of cddb bundle.
+Therefore, use #include <Cddb/Cddb.h> in your source code.
+Cddb bundle offers high-level and low-level methods.
+Read TUTORIAL and CddbTest/ as examples
+
+Low-level method corresponds to the cddbp protocol.
+Read the cddbp protocol for more details
+
+High-level method use a NSArray of NSDictionary as input.
+The keys of NSDictionary are "length" and "offset" of each CD track in frames.
+The object of NSDictionary can be NSString or NSNumber (has intValue method).
+The number of objects in NSArray are the number of CD tracks.
+
+The return value of read: is a NSDictionary depending on the postProcess.
+If postProcess: NO, the return value corresponds to the cddb format.
+The class of objects and keys of return NSDictionary (postProcess: NO) are:
+NSString, "discid"
+NSString, "album"
+NSString, "year" (level 4 or up)
+NSString, "genre" (level 4 or up)
+NSArray, "titles" (title of each track)
+NSString, "extdata" (extra data about this album)
+NSArray, "exttitles" (extratitle of each track)
+
+Becuase the cddb format doesn't have an artist field,
+So the artist is either in album or titles fields.
+Use postProcess: YES to process the cddb format
+and give out the artist field.
+The class of objects and Keys of return NSDictionary (postProcess: YES) are:
+NSString, "discid"
+NSString, "album"
+NSString, "year"
+NSString, "genre"
+NSArray, "artists" <= This is new
+NSArray, "titles"
+NSString, 'extdata"
+NSArray, "exttitles"
+
+The return of query: is an NSArray of NSDictionary.
+The keys of NSDictionary are "category", "discid", "description".
+
+Right now, Cddb.bundle uses block I/O.
+Beware it will block your applcation when accessing cddb server.
+
+Install
+-------
+`make install` should work.
+
+License
+-------
+GNU General Public License
+
+Author
+------
+Yen-Ju Chen <yjchenx@hotmail.com>

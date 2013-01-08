@@ -1,0 +1,15 @@
+<br>
+Actually, there is not so much left to do. You may believe it or not ;-)
+<br>
+<ul>
+	<li>Implement a better error handling in class Player.
+	    Currently the app simply shows the error string and exits.</li>
+	<li>Fix the remaining bugs :-)</li>
+</ul>
+<br>
+<br>
+If you are missing a feature, please tell me. If I have time 
+and think it is missing, too, I will implement it.<br>
+But you are as well welcome 
+to do some programming on your own and contribute to the project. This 
+will grant you at least a place in the CREDITS file ;-)

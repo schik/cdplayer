@@ -1,0 +1,53 @@
+<section name="Running CDPlayer">
+	CDPlayer is started as every other GNUstep application, too.
+	It will try to find a playable audio CD in any of the configured 
+	CD drives of your PC. If it has found one, the track list will 
+	show the tracks and the main panel will look like in the picture 
+	in section <ref id="The main control panel">"The main control panel"</ref>. 
+	If all drives are empty, the main panel looks like this:<br><br>
+	<img src="MainEmpty.tiff"><br><br>
+	On startup you can supply the argument 'Device' containing the 
+	path to your preferred CD drive, e.g. 'Device=/dev/cdrom'. This 
+	drive will then be checked first for an audio CD.<br><br>
+	CDPlayer.app (or rather AudioCD.bundle) will then continually 
+	check the configured (see <ref id="Configuration">"Configuration" for details</ref>) 
+	for a change, i.e. it will detect itself if you remove the CD or 
+	insert a new one.
+</section>
+
+<section name="The main control panel">
+	CDPlayer.app's main control panel resembles the front panel of your
+	home stereo's CD player. Only, it is much simpler. Thus, it should be
+	easy to understand.
+	<br><br>
+	<legendfig src="Main.tiff">
+		<legend x="35" y="50" >The index of the current track.</legend>
+		<legend x="100" y="50">The already played time of the current track.</legend>
+		<legend x="20" y="80">Got to the beginning of the last track or one track backward.</legend>
+		<legend x="50" y="80">Play the current track.</legend>
+		<legend x="80" y="80">Pause the currently playing track.</legend>
+		<legend x="110" y="80">Jump forward to the next track.</legend>
+		<legend x="140" y="80">Stop the currently playing track.</legend>
+	</legendfig>
+</section>
+
+<section name="The track list">
+	The track list is a list displaying the CD's tracks and their respective
+	length. The currently played track is printed in bold. The track list has
+	no further functionality. In particular it is <b>not</b> meant to be any kind
+	of a smart play list. It is just a dumb list.
+	<br>
+	Actually, there is one function you may find useful. You can select tracks
+	you wish to copy onto a CD, and drag them to Burn.app's CD description
+	window.
+	<br>
+	If you do have a connection to the internet, you may also do a query on a
+	FreeDB server to have the track titles displayed properly. This will work
+	only, if you have chosen a FreeDB server in CDPlayer.app's settings.
+	<br><br>
+	<legendfig src="TrackList.tiff">
+		<legend x="55" y="45" >The Cddb ID of the current CD or 'No CD' if tray is empty.</legend>
+		<legend x="145" y="190">The list of tracks with generic title and Duration.</legend>
+		<legend x="120" y="95">The currently played track is displayed with a bold font.</legend>
+	</legendfig>
+</section>

@@ -1,0 +1,18 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    AudioCD = {
+	Actions = (
+	    "addButtonClicked:",
+	    "removeButtonClicked:"
+	);
+	Outlets = (
+	    driveList,
+	    driveInput,
+	    addButton,
+	    removeButton,
+	    view,
+	    _window
+	);
+	Super = NSObject;
+    };
+}

@@ -1,0 +1,140 @@
+/***
+German.lproj/Localizable.strings
+updated by make_strings 2012-06-29 14:45:55 +0200
+add comments above this one
+***/
+
+
+/*** Keys found in multiple places ***/
+
+/* File: FreeDBView.m:151 */
+/* File: TrackList.m:323 */
+/* File: TrackList.m:328 */
+/* File: TrackList.m:333 */
+"OK" = "OK";
+
+/* File: AudioCD/AudioCD.m:129 */
+/* File: AudioCD/AudioCD.m:142 */
+/* File: AudioCD/AudioCD.m:143 */
+/* File: TrackList.m:79 */
+/* File: TrackList.m:80 */
+/* File: TrackList.m:145 */
+/* File: TrackList.m:146 */
+"Unknown" = "Unbekannt";
+
+/* File: Controller.m:165 */
+/* File: Preferences.m:141 */
+"Close" = "Schlie\u00dfen";
+
+
+/*** Strings from AudioCD/AudioCD.m ***/
+/* File: AudioCD/AudioCD.m:130 */
+"Track%d" = "Track%d";
+
+
+/*** Strings from Controller.m ***/
+/* File: Controller.m:159 */
+"Arrange" = "Arrangieren";
+/* File: Controller.m:151 */
+"Help" = "Hilfe";
+/* File: Controller.m:130 */
+"Hide" = "Ausblenden";
+/* File: Controller.m:141 */
+/* File: Controller.m:110 */
+"Info" = "Info";
+/* File: Controller.m:143 */
+"Info Panel..." = "Kurzinformationen...";
+/* File: Controller.m:162 */
+"Miniaturize" = "Miniaturisieren";
+/* File: Controller.m:147 */
+"Preferences..." = "Grundeinstellungen...";
+/* File: Controller.m:118 */
+"Query CDDB" = "Frage CDDB ab";
+/* File: Controller.m:134 */
+"Quit" = "Beenden";
+/* File: Controller.m:172 */
+/* File: Controller.m:126 */
+"Services" = "Dienste";
+/* File: Controller.m:114 */
+"Show Track List" = "Zeige Trackliste";
+/* File: Controller.m:158 */
+/* File: Controller.m:122 */
+"Windows" = "Fenster";
+
+
+/*** Strings from FreeDBView.m ***/
+/* File: FreeDBView.m:149 */
+"Can't get list from internet"
+= "Kann Liste nicht aus Internet herunterladen.";
+/* File: FreeDBView.m:150 */
+"Can't get the list of public freedb sites.\nMake sure you have internet connection and the connection to the official freedb site (www.freedb.org) works."
+= "Kann die Liste von FreeDB servern nicht laden.\nStellen Sie sicher, dass Sie eine Verbindung zum Internet haben und\ndass die Verbindung zum offiziellen FreeDB Server www.freedb.org funktioniert.";
+
+
+/*** Strings from GeneralView.m ***/
+/* File: GeneralView.m:116 */
+"General" = "Allgemein";
+
+
+/*** Strings from Player.m ***/
+/* File: Player.m:602 */
+"Could not write TOC to pasteboard."
+= "Konnte TOC nicht in Zwischenablageschreiben.";
+/* File: Player.m:77 */
+"Couldn't find AudioCD bundle." = "Konnte AudioCD Bibliothek nicht finden.";
+/* File: Player.m:78 */
+"Exit" = "Beenden";
+/* File: Player.m:588 */
+"No Audio CD found." = "Keine Audio CD gefunden.";
+/* File: Player.m:617 */
+"Player.alreadyPlaying" = "CDPlayer spielt bereits eine CD.";
+/* File: Player.m:649 */
+"Player.noDeviceNameFound"
+= "Es wurde kein Dateiname im Pasteboard gefunden.";
+/* File: Player.m:626 */
+"Player.noValidPboardType"
+= "Es wurde kein g\U00fcltiger Datentyp im Pasteboard gefunden.";
+/* File: Player.m:641 */
+"Player.tooManyFileNames"
+= "Es wurden zu viele Dateinamen im Pasteboard gefunden.";
+
+
+/*** Strings from Preferences.m ***/
+/* File: Preferences.m:127 */
+"Preferences" = "Grundeinstellungen";
+/* File: Preferences.m:134 */
+"Save" = "Speichern";
+
+
+/*** Strings from TrackList.m ***/
+/* File: TrackList.m:439 */
+"%@ [Data]" = "%@ [Daten]";
+/* File: TrackList.m:147 */
+"CD" = "CD";
+/* File: TrackList.m:209 */
+"CD: %@\nTrack: %@" = "CD: %@\nTrack: %@";
+/* File: TrackList.m:332 */
+"Couldn't find Cddb bundle." = "Konnte Cddb.bundle nicht finden.";
+/* File: TrackList.m:327 */
+"Couldn't find any matches."
+= "Konnte keine passenden Eintr\u00e4ge finden.";
+/* File: TrackList.m:322 */
+"Couldn't read CD information." = "Konnte CD Information nicht lesen.";
+/* File: TrackList.m:118 */
+/* File: TrackList.m:84 */
+"No CD" = "Keine CD";
+/* File: TrackList.m:160 */
+"Track %d" = "Track %d";
+/* File: TrackList.m:82 */
+"Track List" = "Trackliste";
+
+
+/*** Strings from TrackListView.m ***/
+/* File: TrackListView.m:99 */
+"Artist" = "K\U00fcnstler";
+/* File: TrackListView.m:123 */
+"Duration" = "Dauer";
+/* File: TrackListView.m:86 */
+"Nr" = "Nr";
+/* File: TrackListView.m:111 */
+"Title" = "Titel";

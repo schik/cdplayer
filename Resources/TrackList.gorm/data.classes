@@ -1,0 +1,27 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "orderFrontFontPanel:"
+	);
+	Super = NSObject;
+    };
+    TrackList = {
+	Actions = (
+	);
+	Outlets = (
+	    trackListView,
+	    window,
+	    titleField
+	);
+	Super = NSObject;
+    };
+    TrackListView = {
+	Actions = (
+	);
+	Outlets = (
+	    delegate
+	);
+	Super = NSView;
+    };
+}

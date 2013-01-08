@@ -1,0 +1,8 @@
+{
+  	CFBundleIdentifier = de.schik.audiocdmodule;
+	NSPrefPaneIconFile = "AudioCD.tiff";
+	NSPrefPaneIconLabel = "AudioCD";
+  	NSExecutable = AudioCD;
+	NSMainNibFile = AudioCD;
+	NSPrincipalClass = AudioCD;
+}

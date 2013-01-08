@@ -1,0 +1,23 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "outputListChanged:",
+	    "orderFrontFontPanel:"
+	);
+	Super = NSObject;
+    };
+    GeneralView = {
+	Actions = (
+	    "outputListChanged:"
+	);
+	Outlets = (
+	    exitMatrix,
+	    deviceField,
+	    window,
+	    view,
+	    outputList
+	);
+	Super = NSObject;
+    };
+}

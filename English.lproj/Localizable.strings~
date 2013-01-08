@@ -1,0 +1,136 @@
+/***
+English.lproj/Localizable.strings
+updated by make_strings 2012-06-29 14:45:55 +0200
+add comments above this one
+***/
+
+
+/*** Keys found in multiple places ***/
+
+/* File: FreeDBView.m:151 */
+/* File: TrackList.m:323 */
+/* File: TrackList.m:328 */
+/* File: TrackList.m:333 */
+"OK" = "OK";
+
+/* File: AudioCD/AudioCD.m:129 */
+/* File: AudioCD/AudioCD.m:142 */
+/* File: AudioCD/AudioCD.m:143 */
+/* File: TrackList.m:79 */
+/* File: TrackList.m:80 */
+/* File: TrackList.m:145 */
+/* File: TrackList.m:146 */
+"Unknown" = "Unknown";
+
+/* File: Controller.m:165 */
+/* File: Preferences.m:141 */
+"Close" = "Close";
+
+
+/*** Strings from AudioCD/AudioCD.m ***/
+/* File: AudioCD/AudioCD.m:130 */
+"Track%d" = "Track%d";
+
+
+/*** Strings from Controller.m ***/
+/* File: Controller.m:159 */
+"Arrange" = "Arrange";
+/* File: Controller.m:151 */
+"Help" = "Help";
+/* File: Controller.m:130 */
+"Hide" = "Hide";
+/* File: Controller.m:141 */
+/* File: Controller.m:110 */
+"Info" = "Info";
+/* File: Controller.m:143 */
+"Info Panel..." = "Info Panel...";
+/* File: Controller.m:162 */
+"Miniaturize" = "Miniaturize";
+/* File: Controller.m:147 */
+"Preferences..." = "Preferences...";
+/* File: Controller.m:118 */
+"Query CDDB" = "Query CDDB";
+/* File: Controller.m:134 */
+"Quit" = "Quit";
+/* File: Controller.m:172 */
+/* File: Controller.m:126 */
+"Services" = "Services";
+/* File: Controller.m:114 */
+"Show Track List" = "Show Track List";
+/* File: Controller.m:158 */
+/* File: Controller.m:122 */
+"Windows" = "Windows";
+
+
+/*** Strings from FreeDBView.m ***/
+/* File: FreeDBView.m:149 */
+"Can't get list from internet" = "Can't get list from internet";
+/* File: FreeDBView.m:150 */
+"Can't get the list of public freedb sites.\nMake sure you have internet connection and the connection to the official freedb site (www.freedb.org) works."
+= "Can't get the list of public freedb sites.\nMake sure you have internet connection and the connection to the official freedb site (www.freedb.org) works.";
+
+
+/*** Strings from GeneralView.m ***/
+/* File: GeneralView.m:116 */
+"General" = "General";
+
+
+/*** Strings from Player.m ***/
+/* File: Player.m:602 */
+"Could not write TOC to pasteboard." = "Could not write TOC to pasteboard.";
+/* File: Player.m:77 */
+"Couldn't find AudioCD bundle." = "Couldn't find AudioCD bundle.";
+/* File: Player.m:78 */
+"Exit" = "Exit";
+/* File: Player.m:588 */
+"No Audio CD found." = "No Audio CD found.";
+/* File: Player.m:617 */
+"Player.alreadyPlaying" = "CDPlayer is already playing a CD.";
+/* File: Player.m:649 */
+"Player.noDeviceNameFound" = "No device name found on the pasteboard.";
+/* File: Player.m:626 */
+"Player.noValidPboardType"
+= "CDPlayer could not find a valid pasteboard type";
+/* File: Player.m:641 */
+"Player.tooManyFileNames"
+= "There are too many file names on the pasteboard (max. 1).";
+
+
+/*** Strings from Preferences.m ***/
+/* File: Preferences.m:127 */
+"Preferences" = "Preferences";
+/* File: Preferences.m:134 */
+"Save" = "Save";
+
+
+/*** Strings from TrackList.m ***/
+/* File: TrackList.m:439 */
+"%@ [Data]" = "%@ [Data]";
+/* File: TrackList.m:147 */
+"CD" = "CD";
+/* File: TrackList.m:209 */
+"CD: %@\nTrack: %@" = "CD: %@\nTrack: %@";
+/* File: TrackList.m:332 */
+"Couldn't find Cddb bundle." = "Couldn't find Cddb bundle.";
+/* File: TrackList.m:327 */
+"Couldn't find any matches." = "Couldn't find any matches.";
+/* File: TrackList.m:322 */
+"Couldn't read CD information." = "Couldn't read CD information.";
+/* File: TrackList.m:118 */
+/* File: TrackList.m:84 */
+"No CD" = "No CD";
+/* File: TrackList.m:160 */
+"Track %d" = "Track %d";
+/* File: TrackList.m:82 */
+"Track List" = "Track List";
+
+
+/*** Strings from TrackListView.m ***/
+/* File: TrackListView.m:99 */
+"Artist" = "Artist";
+/* File: TrackListView.m:123 */
+"Duration" = "Duration";
+/* File: TrackListView.m:86 */
+"Nr" = "Nr";
+/* File: TrackListView.m:111 */
+"Title" = "Title";

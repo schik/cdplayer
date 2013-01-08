@@ -1,0 +1,34 @@
+<label id="Configuration">
+
+<section name="Configuration of CDPlayer">
+The menu "Settings..." opens up a panel where you can set up basic preferences 
+such as the FreeDB server to use for queries or the action to take when CDPlayer 
+exits.
+<br>
+The "General" page shows a text field where you can enter a preferred device 
+for audio CDs. This is equivalent to starting CDPlayer with the argument 
+"Device=&lt;some device&gt;". You also have a set of radio buttons to choose an 
+action to be performed on exiting CDPlayer. The choice is between doing 
+nothing, stopping a currently playing CD, and ejecting the CD.
+<br>
+On the "FreeDB" page you may enter the internet address of your preferred 
+FreeDB server. Clicking the button "Update list" will bring up a list of 
+available servers to choose from. You need a connection to the internet for 
+this.
+</section>
+
+<section name="Configuration of audio CD drives">
+CDPlayer.app uses the defaults section 'AudioCD' to store a list of 
+devices to check for audio CDs. (Actually, it is AudioCD.bundle, that 
+does this, but this does not really matter.) You can edit this manually 
+by using the 'defaults' programm in your terminal, but there also 
+exists a panel fpr Preferences.app to do this.<br><br>
+This is the configuration panel for audio CD drives.<br><br>
+<legendfig src="Config.tiff">
+	<legend x="85" y="215" >The list of drives checked for audio CDs.</legend>
+	<legend x="235" y="160">Enter the name of a drive to be added to the list here.</legend>
+	<legend x="255" y="195">Press 'Add' to add the drive to the list.</legend>
+	<legend x="255" y="230">Press 'Delete' to delete the highlighted drive from the list.</legend>
+</legendfig>
+</section>
+

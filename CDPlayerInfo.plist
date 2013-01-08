@@ -1,0 +1,32 @@
+{
+    ApplicationDescription = "A GNUstep CD player application.";
+    ApplicationIcon = "app.tiff";
+    ApplicationName = CDPlayer;
+    ApplicationRelease = 0.6.0;
+    Authors = ("ACKyugo <ackyugo@geocities.co.jp>", "Andreas Schik <andreas@schik.de>");
+    Copyright = "Copyright (C) 1999-2012 by ACKyugo, Andreas Schik";
+    CopyrightDescription = "Released under GPL";
+    FullVersionID = 0.6.0;
+    URL = "http://www.andreasheppel.de";
+    NSServices = (
+      {
+        NSPortName = CDPlayer;
+        NSMessage = playCD;
+        NSSendTypes = (NSFilenamesPboardType, NSStringPboardType);
+        NSMenuItem = {
+          default = "CDPlayer/Play CD";
+	  German = "CDPlayer/CD Abspielen";
+        };
+      },
+      {
+        NSPortName = CDPlayer;
+        NSMessage = getTOC;
+        NSReturnTypes = (AudioCDPboardType);
+        NSMenuItem = {
+          default = "CDPlayer/Get Table Of Contents";
+	  German = "CDPlayer/Hole Inhaltsverzeichnis";
+        };
+      }
+    );
+}
+
