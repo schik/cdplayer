@@ -133,7 +133,7 @@ static Player *sharedPlayer = nil;
         [output playChunk: streamChunk];
     } else {
         // If no data can be read, we assume that playing has stopped
-        currentState = AUDIOCD_STOPPED;
+        [self stop: self];
     }
 }
 @end
@@ -202,6 +202,9 @@ static Player *sharedPlayer = nil;
     [super dealloc];
 }
 
+/**
+  * This method is called from threaded outputs only.
+  */
 - (int) readNextChunk: (unsigned char *) buffer
              withSize: (unsigned int) bufferSize
 {
@@ -212,7 +215,7 @@ static Player *sharedPlayer = nil;
         if (inputSize <= 0) {
             inputSize = 0;
             // If no data can be read, we assume that playing has stopped
-            currentState = AUDIOCD_STOPPED;
+            [self stop: self];
         }
     } else {
         inputSize = 0;
@@ -363,8 +366,8 @@ static Player *sharedPlayer = nil;
 {
     // the 'stop' button is also 'eject' if CD is already halted,
     // but not the Controller, which may also stop the CD on exit
-    if(sender == stop) {
-        if(currentState == AUDIOCD_STOPPED) {
+    if (sender == stop) {
+        if (currentState == AUDIOCD_STOPPED) {
             [drive eject];
             return;
         }
