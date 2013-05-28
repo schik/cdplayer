@@ -40,7 +40,7 @@ static Player *sharedPlayer = nil;
 @interface Player (Private)
 - (BOOL) loadBundles;
 - (void) ensureOutput;
-- (void) reInitOutputIfNeeded;
+- (BOOL) reInitOutputIfNeeded;
 - (void) playLoopIteration;
 @end
 
@@ -89,14 +89,20 @@ static Player *sharedPlayer = nil;
     return YES;
 }
 
-- (void) reInitOutputIfNeeded
+- (BOOL) reInitOutputIfNeeded
 {
     // CDDA is always 2 ch with 44100 Hz smaple rate
     if (![output prepareDeviceWithChannels: 2
                                    andRate: 44100
                             withEndianness: LittleEndian]) {
         NSLog (@"error preparing output for 2 channels at a rate of 44100");
+        return NO;
     }
+    if (NO == [output openDevice]) {
+        NSLog (@"error opening output device");
+        return NO;
+    }
+    return YES;
 }
 
 
@@ -108,16 +114,19 @@ static Player *sharedPlayer = nil;
     gv = [GeneralView singleInstance];
     outputClass = [gv preferredOutputClass];
     if (output && [output class] != outputClass) {
+        [output closeDevice];
         [output release];
         output = nil;
-        [self reInitOutputIfNeeded];
     }
 
     if (!output) {
         outputIsThreaded = [outputClass isThreaded];
         output = [outputClass new];
         [output setParentPlayer: self];
-        [self reInitOutputIfNeeded];
+        if (![self reInitOutputIfNeeded]) {
+            [output release];
+            output = nil;
+        }
     }
 }
 
@@ -324,11 +333,14 @@ static Player *sharedPlayer = nil;
 
     [self ensureOutput];
 
+    // Here, we either have an opened and initialized output
+    // device or we have nothing
+    if (nil == output) {
+        return;
+    }
+
     if (AUDIOCD_PLAYING != currentState) {
         if (AUDIOCD_STOPPED == currentState) {
-            if (NO == [output openDevice]) {
-                return;
-            }
             [drive seek: currentTrack];
         }
         [drive start];
@@ -381,7 +393,6 @@ static Player *sharedPlayer = nil;
         [drive stop];
     }
 
-    [output closeDevice];
     currentState = AUDIOCD_STOPPED;
     currentTrack = 1;
     changePauseButton = YES;
