@@ -34,7 +34,7 @@
     id trackListView;
 
     int playsTrack;
-    NSMutableDictionary *toc;
+    NSDictionary *toc;
     NSString *artist;
     NSString *title;
 }

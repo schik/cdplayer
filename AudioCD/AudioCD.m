@@ -251,7 +251,7 @@ static BOOL readerThreadRunning = NO;
     }
 
     // check whether track number is in range
-    if ((0 > track) || (drive->tracks < track)) {
+    if (drive->tracks < track) {
         return;
     }
 
