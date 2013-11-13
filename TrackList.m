@@ -364,7 +364,9 @@ static const long MSG_TIMEOUT = 10000;
         }
     }
     cacheFile = [cacheDir stringByAppendingPathComponent: discid];
-    [cdInfo writeToFile: cacheFile atomically: YES];
+    if ([fm fileExistsAtPath: cacheFile isDirectory: &isdir] == NO) {
+        [cdInfo writeToFile: cacheFile atomically: YES];
+    }
 }
 
 - (NSDictionary *) getCddbResultFromCache: (NSString *) discid
