@@ -45,6 +45,8 @@
 - (void) startPollingWithPreferredDevice: (NSString *)device;
 - (void) stopPolling;
 
+- (NSString *) device;
+
 - (NSMutableDictionary *) readTOC;
 
 - (void) setVolumeLevel: (float) vLevel;

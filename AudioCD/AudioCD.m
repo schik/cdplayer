@@ -105,6 +105,11 @@ static BOOL readerThreadRunning = NO;
     } while (pollThreadRunning);
 }
 
+- (NSString *)device
+{
+    return [[foundDevice copy] autorelease];
+}
+
 - (void) setHandler: (id<CDHandlerProtocol>)handler
 {
     _handler = handler;
@@ -159,10 +164,13 @@ static BOOL readerThreadRunning = NO;
     NSString *temp;
 
     if (NULL == drive) {
+        NSLog(@"no drive");
         return NO;
     }
     temp = [NSString stringWithFormat: @"%08X", [self cddbDiskid]];
+    NSLog(@"cddbId: %@, temp: %@", cddbId, temp);
     if ([cddbId isEqual: temp]) {
+        NSLog(@"strings are equal");
         return YES;
     }
     return NO;
