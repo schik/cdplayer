@@ -201,6 +201,9 @@
 - (void)applicationWillFinishLaunching:(NSNotification *)not
 {
     [self createMenu];
+    player = [Player sharedPlayer];
+    [NSApp setServicesProvider: player];
+    [player buildInterface];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -209,9 +212,6 @@
     NSFileManager *fm = [NSFileManager defaultManager];
     NSString *tmpFileName = nil;
 
-    player = [Player sharedPlayer];
-    [NSApp setServicesProvider: player];
-    [player buildInterface];
     [TrackList sharedTrackList];
     if ([defaults integerForKey: @"ShowTrackListOnStartup"]) {
         [self showTrackList: self];
@@ -260,6 +260,12 @@
     if ([fm fileExistsAtPath: tmpFileName] == YES) {
         [fm removeFileAtPath: tmpFileName handler: nil];
     }
+    return YES;
+}
+
+- (BOOL) application: (NSApplication*)app openFile: (NSString*)file
+{
+    [player playCD: file];
     return YES;
 }
 

@@ -684,10 +684,18 @@ static Player *sharedPlayer = nil;
             *error = _(@"Player.noDeviceNameFound");
             return;
         }
-        autoPlay = YES;
-        [drive stopPolling];
-        [drive startPollingWithPreferredDevice: device];
+        [self playCD: device];
     }
+}
+
+- (void) playCD: (NSString *) device
+{
+    if (device == nil) {
+        return;
+    }
+    autoPlay = YES;
+    [drive stopPolling];
+    [drive startPollingWithPreferredDevice: device];
 }
 
 //

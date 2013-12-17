@@ -85,6 +85,8 @@
 	   userData: (NSString *) userData
 		  error: (NSString **) error;
 
+- (void) playCD: (NSString *) device;
+
 //
 // class methods
 //
