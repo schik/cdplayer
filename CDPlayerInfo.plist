@@ -4,10 +4,10 @@
     ApplicationName = CDPlayer;
     ApplicationRelease = 0.6.0;
     Authors = ("ACKyugo <ackyugo@geocities.co.jp>", "Andreas Schik <andreas@schik.de>");
-    Copyright = "Copyright (C) 1999-2012 by ACKyugo, Andreas Schik";
+    Copyright = "Copyright (C) 1999-2014 by ACKyugo, Andreas Schik";
     CopyrightDescription = "Released under GPL";
     FullVersionID = 0.6.0;
-    URL = "http://www.andreasheppel.de";
+    URL = "http://blog.andreasschik.de";
     NSServices = (
       {
         NSPortName = CDPlayer;

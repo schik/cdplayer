@@ -5,6 +5,7 @@ Version 0.6.0
 - Use Cynthiune's output backends for audio output.
 - Removed the preference pane for AudioCD.bundle as it no longer
   has any preferences.
+- Added an output volume control
 
 Version 0.5.1
 -------------
