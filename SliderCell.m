@@ -98,7 +98,7 @@
     return NO;
 }
 
-- (float) knobThickness
+- (CGFloat) knobThickness
 {
     NSSize size;
     size = [[knobCell image] size];
