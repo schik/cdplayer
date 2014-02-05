@@ -20,6 +20,7 @@ CDPlayer_OBJC_FILES = \
 	FreeDBView.m \
 	GeneralView.m \
 	BundleManager.m \
+	SliderCell.m \
 	LED.m
 
 CDPlayer_C_FILES = \

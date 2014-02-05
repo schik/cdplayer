@@ -24,11 +24,14 @@
 
 #import <Cynthiune/Output.h>
 
+#import <AppKit/NSImageView.h>
+
 #include "Player.h"
 #include "LED.h"
 #include "TrackList.h"
 #include "BundleManager.h"
 #include "GeneralView.h"
+#include "SliderCell.h"
 
 #define AUDIOCD_PLAYING         0
 #define AUDIOCD_PAUSED          1
@@ -585,9 +588,25 @@ static Player *sharedPlayer = nil;
     [stop setAction: @selector(stop:)];
     [[window contentView] addSubview: stop];
 
-    frame = NSMakeRect(5, 5, 150, 15);
+    frame = NSMakeRect(5, 5, 16, 16);
+    NSImageView *iv = [[NSImageView alloc] initWithFrame: frame];
+    path = [bundle pathForResource: @"volume" ofType: @"tiff"];
+    image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
+    if(image == nil) {
+        NSLog(@"cannot load volume.tiff");
+    }
+    [iv setImage: image];
+    [[window contentView] addSubview: iv];
+
+    frame = NSMakeRect(20, 5, 135, 15);
     volume = [[NSSlider alloc] initWithFrame: frame];
-    [[volume cell] setSliderType: NSLinearSlider];
+
+    NSCell *cell = [SliderCell new];
+    [cell setBordered: NO];
+    [cell setBezeled: NO];
+    [volume setCell: cell];
+
+    [volume setEnabled: YES];
     [volume setMinValue: 0.0f];
     [volume setMaxValue: 1.0f];
     [volume setFloatValue: 0.75f];
