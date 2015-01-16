@@ -202,7 +202,6 @@
 {
     [self createMenu];
     player = [Player sharedPlayer];
-    [NSApp setServicesProvider: player];
     [player buildInterface];
 }
 
@@ -211,6 +210,16 @@
     NSUserDefaults  *defaults = [NSUserDefaults standardUserDefaults];
     NSFileManager *fm = [NSFileManager defaultManager];
     NSString *tmpFileName = nil;
+  
+  NS_DURING
+    {
+      [NSApp setServicesProvider:player];
+    }
+  NS_HANDLER
+    {
+      NSLog(@"setServicesProvider: %@", localException);
+    }
+  NS_ENDHANDLER
 
     [TrackList sharedTrackList];
     if ([defaults integerForKey: @"ShowTrackListOnStartup"]) {
