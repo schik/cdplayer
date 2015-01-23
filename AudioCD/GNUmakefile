@@ -16,10 +16,16 @@ ADDITIONAL_OBJCFLAGS = -Wall
 ADDITIONAL_INCLUDE_DIRS += -I..
 
 ADDITIONAL_LIBS := -lcdio -lcdio_cdda -lcdio_paranoia
+
+ifeq ($(coverart), yes)
+    ADDITIONAL_OBJCFLAGS += -DCOVERART
+    ADDITIONAL_LIBS += -ldiscid
+endif
+
 ifeq (mingw32, $(GNUSTEP_TARGET_OS))
-ADDITIONAL_GUI_LIBS += $(ADDITIONAL_LIBS)
+    ADDITIONAL_GUI_LIBS += $(ADDITIONAL_LIBS)
 else
-BUNDLE_LIBS += $(ADDITIONAL_LIBS)
+    BUNDLE_LIBS += $(ADDITIONAL_LIBS)
 endif
 
 

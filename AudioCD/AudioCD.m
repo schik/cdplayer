@@ -26,6 +26,7 @@
 
 #include "AudioCD.h"
 
+#include <discid/discid.h>
 
 static BOOL exitThread = NO;
 static BOOL pollThreadRunning = NO;
@@ -39,6 +40,7 @@ static BOOL readerThreadRunning = NO;
 - (void) checkDrivesThread: (id) anObject;
 - (void) readerThread: (id) anObject;
 - (uint32_t) cddbDiskid;
+- (NSString *) musicBrainzDiscId;
 
 @end
 
@@ -149,6 +151,7 @@ static BOOL readerThreadRunning = NO;
 
     [toc setObject: [NSString stringWithFormat: @"%08X", [self cddbDiskid]]
         forKey: @"cddbid"];
+    [toc setObject: [self musicBrainzDiscId] forKey: @"mbDiscId"];
     [toc setObject: [NSString stringWithFormat: @"%d",
                     cdda_track_lastsector(drive, drive->tracks) - cdda_track_firstsector(drive, 1) + 1 + CD_MSF_OFFSET]
         forKey: @"discLength"];
@@ -278,10 +281,11 @@ static BOOL readerThreadRunning = NO;
         return;
     }
 
-    if(cdio_eject_media(&(drive->p_cdio)) != DRIVER_OP_SUCCESS) {
+    driver_return_code_t c = cdio_eject_media(&(drive->p_cdio));
+    if(c != DRIVER_OP_SUCCESS) {
         [_handler audioCD: self
-                    error: errno
-                  message: [NSString stringWithCString: strerror(errno)]];
+                    error: c
+                  message: [NSString stringWithCString: cdio_driver_errmsg(c)]];
     }
 }
 
@@ -639,6 +643,25 @@ static int cddb_dec_digit_sum(int n)
     t = cdio_audio_get_msf_seconds(&msf)-cdio_audio_get_msf_seconds(&start_msf);
   
     return ((n % 0xff) << 24 | t << 8 | drive->tracks);
+}
+
+- (NSString *) musicBrainzDiscId
+{
+#ifdef COVERART
+    NSString *result = @"";
+    DiscId *discId = discid_new();
+
+    if (NULL != discId) {
+        if (discid_read(discId, drive->cdda_device_name) != 0) {
+            char *mbid = discid_get_id(discId);
+            result = [NSString stringWithCString: (const char *)mbid length: strlen(mbid)];
+        }
+        discid_free(discId);
+    }
+    return result;
+#else
+    return @""
+#endif
 }
 
 @end
