@@ -89,6 +89,9 @@ static Player *sharedPlayer = nil;
 
     path = [[NSUserDefaults standardUserDefaults] stringForKey: @"Device"];
     drive = [[audiocdClass alloc] initWithHandler: self];
+    if (nil != volume) {
+        [drive setVolumeLevel: [volume floatValue]];
+    }
     [drive startPollingWithPreferredDevice: path];
 
     return YES;
@@ -221,6 +224,32 @@ static Player *sharedPlayer = nil;
         }
     }
     return sharedPlayer;
+}
+
+- (void) awakeFromNib
+{
+    // For some reason creating the volume slider within the Gorm
+    // bundle did not work. Thus we set up the volume control, here.
+    NSRect frame = NSMakeRect(26, 10, 280, 16);
+    volume = [[NSSlider alloc] initWithFrame: frame];
+
+    NSCell *cell = [SliderCell new];
+    [cell setBordered: NO];
+    [cell setBezeled: NO];
+    [volume setCell: cell];
+
+    [volume setEnabled: YES];
+    [volume setMinValue: 0.0f];
+    [volume setMaxValue: 1.0f];
+    [volume setFloatValue: 0.75f];
+    [volume setContinuous: NO];
+    [volume setTarget: self];
+    [volume setAction: @selector(setVolume:)];
+    if (nil != drive) {
+        [drive setVolumeLevel: [volume floatValue]];
+    }
+    [volume setToolTip: [NSString stringWithFormat: @"Volume: %f", [volume floatValue]]];
+    [[window contentView] addSubview: volume];
 }
 
 - (void) dealloc
