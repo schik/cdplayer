@@ -12,7 +12,7 @@ All bugs reports should be sent to Andreas Schik <andreas@schik.de>.
 
 How to build CDPlayer.app
 -------------------------
-o You must install libcdio, libcdio_cdda and libcdio_paranoia first. These
+o You must install libcdio, libcdio_cdda and libcdio_paranoia, first. These
   libraries are needed for reading the CDDA data.
 
 o As CDPlayer uses Cynthiune's output bundles to make the CD audible, you must
@@ -32,16 +32,17 @@ o To install CDPlayer in your global GNUstep directory do:
   AudioCD and Cddb bundles in $(GNUSTEP_SYSTEM_ROOT)/Library/Bundles.
   The AudioCD bundle does all the audio CD handling.
 
+o By default, CDPlayer sends out desktop notifications on each new track to
+  indicate the currently played track. This feature can be turned off by
+  building CDPlayer like this:
+        make notifications=no
 
-GNUstep system
---------------
-o CDPlayer 0.6.0 has been tested on GNU/Linux using the following versions
-  of GNUstep:
-
-gnustep-make	1.21
-gnustep-base	1.21
-gnustep-gui	0.19
-gnustep-back	0.19
+o As of version 0.7.0, CDPlayer is able to display cover art, i.e. the front
+  cover of the currently played CD is displayed in the main window. To use
+  this feature you must install libmusicbrainz4, libdiscid and libcoverart
+  before building CDPlayer. This feature is turned off by default. CDPlayer
+  must be built like this to enable cover art display:
+        make coverart=yes
 
 
 Cynthiune
@@ -50,6 +51,7 @@ CDPlayer has been developed and tested against Cynthiune 1.0.0.
 Cynthiune is part of GAP, which can be found here:
 
 http://gap.nongnu.org/
+
 
 CDDB/FreeDB suport
 ------------------
@@ -73,3 +75,11 @@ the AudioCD bundle.
 
 If no device is given, AudioCD.bundle will poll all devices for audio CDs. It will
 play the first on, it can find.
+
+
+Cached Data
+-----------
+
+CDPlayer caches Cddb data and cover art files. This speeds up loading of already
+known CDs. The files are located in $HOME/GNUstep/Library/CDPlayer/[discinfo|coverart].
+Deleting these files should do no harm.
