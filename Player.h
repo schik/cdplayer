@@ -30,7 +30,6 @@
 #include <AudioCD/AudioCDProtocol.h>
 
 @class	NSTimer;
-@class	LED;
 
 @protocol Output;
 
@@ -41,7 +40,8 @@
 	id<Output> output;
 	BOOL outputIsThreaded;
 	BOOL closingThread;
-	BOOL changePauseButton;
+	BOOL togglePlayButton;
+	BOOL togglePauseButton;
 
 	NSTimer		*timer;
 
@@ -51,23 +51,29 @@
 	int		currentState;
 
 	NSWindow	*window;
-	LED		*led;
-	NSButton	*prev;
-	NSButton	*play;
-	NSButton	*pause;
-	NSButton	*stop;
-	NSButton	*next;
-	NSSlider	*volume;
+	id coverArt;
+	id cdLabel;
+	id trackLabel;
+	id timeLabel;
+	id prev;
+	id play;
+	id pause;
+	id stop;
+	id next;
+	id eject;
+	id trackList;
+	id volume;
 }
 
 - init;
-- (void) buildInterface;
+- (id) initWithNibName: (NSString *) nibName;
 
 - (void) pause: (id) sender;
 - (void) stop: (id) sender;
 - (void) next: (id) sender;
 - (void) prev: (id) sender;
 - (void) eject: (id) sender;
+- (void) showTrackList:(id)sender;
 - (void) setVolume: (id) sender;
 
 - (void) playTrack: (NSNotification *)not;

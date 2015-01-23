@@ -2,7 +2,7 @@
 /*
  *  Player.m
  *
- *  Copyright (c) 1999 - 2003, 2012
+ *  Copyright (c) 1999 - 2003, 2015
  *
  *  Author: ACKyugo <ackyugo@geocities.co.jp>
  *      Andreas Schik <andreas@schik.de>
@@ -27,7 +27,6 @@
 #import <AppKit/NSImageView.h>
 
 #include "Player.h"
-#include "LED.h"
 #include "TrackList.h"
 #include "BundleManager.h"
 #include "GeneralView.h"
@@ -45,6 +44,9 @@ static Player *sharedPlayer = nil;
 - (void) ensureOutput;
 - (BOOL) reInitOutputIfNeeded;
 - (void) playLoopIteration;
+#ifdef COVERART
+- (void) displayCoverArt;
+#endif
 @end
 
 @implementation Player (Private)
@@ -148,6 +150,19 @@ static Player *sharedPlayer = nil;
         [self stop: self];
     }
 }
+
+#ifdef COVERART
+- (void) displayCoverArt
+{
+    NSImage *image = [[TrackList sharedTrackList] getCoverArtFromCache];
+    if (nil == image) {
+        NSString *path = [[NSBundle mainBundle] pathForResource: @"disc" ofType: @"tiff"];
+        image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
+    }
+    [coverArt setImage: image];
+}
+#endif
+
 @end
 
 
@@ -155,40 +170,55 @@ static Player *sharedPlayer = nil;
 
 - init
 {
+    [self initWithNibName: @"Player"];
+    return self;
+}
+
+
+- (id) initWithNibName: (NSString *) nibName;
+{
     if (sharedPlayer) {
         [self dealloc];
     } else {
         self = [super init];
+        if (![NSBundle loadNibNamed: nibName owner: self]) {
+            NSLog (@"Could not load nib \"%@\".", nibName);
+        } else {
+            sharedPlayer = self;
 
-        sharedPlayer = self;
+            currentTrack = 1;
+            drive = nil;
+            autoPlay = NO;
+            currentState = AUDIOCD_STOPPED;
+            output = nil;
+            outputIsThreaded = NO;
+            closingThread = NO;
+            togglePlayButton = NO;
+            togglePauseButton = NO;
 
-        currentTrack = 1;
-        drive = nil;
-        autoPlay = NO;
-        currentState = AUDIOCD_STOPPED;
-        output = nil;
-        outputIsThreaded = NO;
-        closingThread = NO;
-        changePauseButton = NO;
+            // we must already create the (hidden) track list
+            [TrackList sharedTrackList];
 
-        // we must already create the (hidden) track list
-        [TrackList sharedTrackList];
+            if (![self loadBundles]) {
+                [self release];
+                return nil;
+            }
 
-        if (![self loadBundles]) {
-            [self release];
-            return nil;
+            timer = [NSTimer scheduledTimerWithTimeInterval: 1
+                                        target: self
+                                      selector: @selector(timer:)
+                                      userInfo: self
+                                       repeats: YES];
+
+            [[NSNotificationCenter defaultCenter] addObserver: self
+                                   selector: @selector(playTrack:)
+                                   name: @"PlayTrack"
+                                   object: nil];
+
+            [window makeKeyAndOrderFront: self];
+            [window setFrameAutosaveName: @"CDPlayerWindow"];
+            [window setFrameUsingName: @"CDPlayerWindow"];
         }
-
-        timer = [NSTimer scheduledTimerWithTimeInterval: 1
-                                    target: self
-                                  selector: @selector(timer:)
-                                  userInfo: self
-                                   repeats: YES];
-
-        [[NSNotificationCenter defaultCenter] addObserver: self
-                               selector: @selector(playTrack:)
-                               name: @"PlayTrack"
-                               object: nil];
     }
     return sharedPlayer;
 }
@@ -201,15 +231,6 @@ static Player *sharedPlayer = nil;
     [drive release];
     [timer invalidate];
     [timer release];
-
-    [led release];
-    [window release];
-    [prev release];
-    [play release];
-    [pause release];
-    [stop release];
-    [next release];
-    [volume release];
 
     [super dealloc];
 }
@@ -253,16 +274,18 @@ static Player *sharedPlayer = nil;
     // This must be done in any case. If the user removes the CD,
     // we must read the TOC and afterwards clear the display.
     if (mustReadTOC) {
-        [[TrackList sharedTrackList] setTOC: [drive readTOC]];
         mustReadTOC = NO;
+        [[TrackList sharedTrackList] setTOC: [drive readTOC]];
+        [cdLabel setStringValue: [[TrackList sharedTrackList] cdTitle]];
+#ifdef COVERART
+        [self displayCoverArt];
+#endif
     }
 
     // is a disc in the drive?
     if ([drive cdPresent] == NO) {
         if (AUDIOCD_STOPPED != currentState) {
             currentState = AUDIOCD_STOPPED;
-            [led setNoCD];
-            [led display];
             [[TrackList sharedTrackList] setPlaysTrack: -1 andNotify: NO];
         }
         return;
@@ -285,14 +308,39 @@ static Player *sharedPlayer = nil;
     }
 
     if (currentState != AUDIOCD_PAUSED) {
-        [led setTrack: currentTrack];
-        [led setMin: min];
-        [led setSec: sec];
-        [led display];
+        if (currentState == AUDIOCD_PLAYING) {
+            NSString *time = [NSString stringWithFormat: @"%02d:%02d", min, sec];
+            [timeLabel setStringValue: time];
+            [trackLabel setStringValue: [[TrackList sharedTrackList] trackTitle: currentTrack]];
+        } else {
+            [trackLabel setStringValue: @""];
+            [timeLabel setStringValue: @""];
+        }
         [[TrackList sharedTrackList] setPlaysTrack: currentTrack andNotify: (currentState == AUDIOCD_PLAYING)];
     }
 
-    if (YES == changePauseButton) {
+    if (YES == togglePlayButton) {
+        NSBundle *bundle = [NSBundle mainBundle];
+        NSString *path = nil;
+        NSImage *image;
+        if (currentState == AUDIOCD_STOPPED) {
+            path = [bundle pathForResource: @"stop_on" ofType: @"tiff"];
+        } else {
+            path = [bundle pathForResource: @"stop" ofType: @"tiff"];
+        }
+        image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
+        [stop setImage: image];
+        if (currentState == AUDIOCD_STOPPED) {
+            path = [bundle pathForResource: @"play" ofType: @"tiff"];
+        } else {
+            path = [bundle pathForResource: @"play_on" ofType: @"tiff"];
+        }
+        image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
+        [play setImage: image];
+        togglePlayButton = NO;
+    }
+
+    if (YES == togglePauseButton) {
         NSBundle *bundle = [NSBundle mainBundle];
         NSString *path = nil;
         NSImage *image;
@@ -303,7 +351,14 @@ static Player *sharedPlayer = nil;
         }
         image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
         [pause setImage: image];
-        changePauseButton = NO;
+        if (currentState == AUDIOCD_PLAYING) {
+            path = [bundle pathForResource: @"play_on" ofType: @"tiff"];
+        } else {
+            path = [bundle pathForResource: @"play" ofType: @"tiff"];
+        }
+        image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
+        [play setImage: image];
+        togglePauseButton = NO;
     }
 }
 
@@ -311,6 +366,11 @@ static Player *sharedPlayer = nil;
 //
 //
 //
+
+- (void) showTrackList: (id)sender
+{
+    [[TrackList sharedTrackList] activate];
+}
 
 - (void) playTrack: (NSNotification *) not
 {
@@ -353,7 +413,8 @@ static Player *sharedPlayer = nil;
         } else {
             [self playLoopIteration];
         }
-        changePauseButton = YES;
+        togglePlayButton = YES;
+        togglePauseButton = YES;
         currentState = AUDIOCD_PLAYING;
     }
 }
@@ -374,20 +435,11 @@ static Player *sharedPlayer = nil;
     } else if (currentState == AUDIOCD_PAUSED) {
         [self play: self];
     }
-    changePauseButton = YES;
+    togglePauseButton = YES;
 }
 
 - (void) stop: (id) sender
 {
-    // the 'stop' button is also 'eject' if CD is already halted,
-    // but not the Controller, which may also stop the CD on exit
-    if (sender == stop) {
-        if (currentState == AUDIOCD_STOPPED) {
-            [drive eject];
-            return;
-        }
-    }
-
     if (AUDIOCD_PLAYING == currentState) {
         if (outputIsThreaded) {
             closingThread = YES;
@@ -398,7 +450,8 @@ static Player *sharedPlayer = nil;
 
     currentState = AUDIOCD_STOPPED;
     currentTrack = 1;
-    changePauseButton = YES;
+    togglePlayButton = YES;
+    togglePauseButton = YES;
 }
 
 - (void) eject: (id) sender
@@ -504,124 +557,6 @@ static Player *sharedPlayer = nil;
     return YES;
 }
 
-- (void) buildInterface
-{
-    NSRect      frame;
-    unsigned int    style = NSTitledWindowMask | NSClosableWindowMask |
-                NSMiniaturizableWindowMask;
-    NSBundle    *bundle = [NSBundle mainBundle];
-    NSImage     *image;
-    NSString    *path;
-
-    frame = NSMakeRect(100, 100, 160, 93);
-    window = [[NSWindow alloc] initWithContentRect: frame
-                         styleMask: style
-                           backing: NSBackingStoreRetained
-                             defer: NO];
-    [window setTitle: @"CDPlayer"];
-    [window setDelegate: self];
-
-    frame = NSMakeRect(5, 58, 150, 30);
-    led = [[LED alloc]  initWithFrame: frame];
-
-    [led setNoCD];
-    [led display];
-    [[window contentView] addSubview: led];
-
-    path = [bundle pathForResource: @"prev" ofType: @"tiff"];
-    image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
-    if(image == nil)    NSLog(@"cannot load prev.tiff");
-    frame = NSMakeRect( 5, 25, 30, 30);
-    prev = [[NSButton alloc] initWithFrame: frame];
-    [prev setButtonType: NSMomentaryPushButton];
-    [prev setImagePosition: NSImageOnly];
-    [prev setImage: image];
-    [prev setTarget: self];
-    [prev setAction: @selector(prev:)];
-    [[window contentView] addSubview: prev];
-
-    path = [bundle pathForResource: @"play" ofType: @"tiff"];
-    image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
-    if(image == nil)    NSLog(@"cannot load play.tiff");
-    frame = NSMakeRect( 35, 25, 30, 30);
-    play = [[NSButton alloc] initWithFrame: frame];
-    [play setButtonType: NSMomentaryPushButton];
-    [play setImagePosition: NSImageOnly];
-    [play setImage: image];
-    [play setTarget: self];
-    [play setAction: @selector(play:)];
-    [[window contentView] addSubview: play];
-
-    path = [bundle pathForResource: @"pause" ofType: @"tiff"];
-    image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
-    if(image == nil)    NSLog(@"cannot load pause.tiff");
-    frame = NSMakeRect( 65, 25, 30, 30);
-    pause = [[NSButton alloc] initWithFrame: frame];
-    [pause setButtonType: NSMomentaryPushButton];
-    [pause setImagePosition: NSImageOnly];
-    [pause setImage: image];
-    [pause setTarget: self];
-    [pause setAction: @selector(pause:)];
-    [[window contentView] addSubview: pause];
-
-    path = [bundle pathForResource: @"next" ofType: @"tiff"];
-    image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
-    if(image == nil)    NSLog(@"cannot load next.tiff");
-    frame = NSMakeRect(95, 25, 30, 30);
-    next = [[NSButton alloc] initWithFrame: frame];
-    [next setButtonType: NSMomentaryPushButton];
-    [next setImagePosition: NSImageOnly];
-    [next setImage: image];
-    [next setTarget: self];
-    [next setAction: @selector(next:)];                                          
-    [[window contentView] addSubview: next];
-
-    path = [bundle pathForResource: @"stop" ofType: @"tiff"];
-    image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
-    if(image == nil)    NSLog(@"cannot load stop.tiff");
-    frame = NSMakeRect(125, 25, 30, 30);
-    stop = [[NSButton alloc] initWithFrame: frame];
-    [stop setButtonType: NSMomentaryPushButton];
-    [stop setImagePosition: NSImageOnly];
-    [stop setImage: image];
-    [stop setTarget: self];
-    [stop setAction: @selector(stop:)];
-    [[window contentView] addSubview: stop];
-
-    frame = NSMakeRect(5, 5, 16, 16);
-    NSImageView *iv = [[NSImageView alloc] initWithFrame: frame];
-    path = [bundle pathForResource: @"volume" ofType: @"tiff"];
-    image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
-    if(image == nil) {
-        NSLog(@"cannot load volume.tiff");
-    }
-    [iv setImage: image];
-    [[window contentView] addSubview: iv];
-
-    frame = NSMakeRect(20, 5, 135, 15);
-    volume = [[NSSlider alloc] initWithFrame: frame];
-
-    NSCell *cell = [SliderCell new];
-    [cell setBordered: NO];
-    [cell setBezeled: NO];
-    [volume setCell: cell];
-
-    [volume setEnabled: YES];
-    [volume setMinValue: 0.0f];
-    [volume setMaxValue: 1.0f];
-    [volume setFloatValue: 0.75f];
-    [volume setContinuous: NO];
-    [volume setTarget: self];
-    [volume setAction: @selector(setVolume:)];
-    [drive setVolumeLevel: [volume floatValue]];
-    [volume setToolTip: [NSString stringWithFormat: @"Volume: %f", [volume floatValue]]];
-    [[window contentView] addSubview: volume];
-
-    [window orderFront: self];
-    [window setFrameAutosaveName: @"CDPlayerWindow"];
-    [window setFrameUsingName: @"CDPlayerWindow"];
-}
-
 
 //
 // services methods
@@ -722,7 +657,7 @@ static Player *sharedPlayer = nil;
 //
 + (Player *) sharedPlayer
 {
-    if (!sharedPlayer) {
+    if (nil == sharedPlayer) {
         sharedPlayer = [[Player alloc] init];
     }
     return sharedPlayer;

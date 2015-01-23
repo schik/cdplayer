@@ -30,6 +30,9 @@
 #import <DBusKit/DBusKit.h>
 #endif
 
+#import <musicbrainz4/mb4_c.h>
+#import <coverart/caa_c.h>
+
 #import "TrackList.h"
 
 static TrackList *sharedTrackList = nil;
@@ -53,6 +56,74 @@ static NSString * const DBUS_PATH = @"/org/freedesktop/Notifications";
 
 static const long MSG_TIMEOUT = 10000;
 #endif
+
+@interface TrackList (Private)
+#ifdef COVERART
+- (NSString *) queryMusicbrainzId: (NSString *)discId;
+- (BOOL) doesCoverArtCacheExist;
+#endif
+@end
+
+@implementation TrackList (Private)
+
+#ifdef COVERART
+- (NSString *) queryMusicbrainzId: (NSString *)discId
+{
+    NSString *result = @"";
+    if ((nil == discId) || ([discId length] == 0)) {
+        return result;
+    }
+
+    Mb4Query query = mb4_query_new("cdplayer-0.7.0", NULL, 0);
+    if (query != NULL) {
+        Mb4ReleaseList rellist = mb4_query_lookup_discid(query, [discId cString]);
+        if (rellist != NULL) {
+            int size = mb4_release_list_size(rellist);
+            if (size > 0) {
+                Mb4Release rel = mb4_release_list_item(rellist, 0);
+                char *mbid = NULL;
+                int required_size = mb4_release_get_id(rel, mbid, 0);
+                mbid = (char*)malloc(required_size + 1);
+                required_size = mb4_release_get_id(rel, mbid, required_size+1);
+                NSLog(@"MBID is %s", mbid);
+                result = [NSString stringWithCString: mbid];
+                free(mbid);
+            } else {
+                NSLog(@"No releases found for disc ID %@", discId);
+            }
+            mb4_release_list_delete(rellist);
+        }
+        mb4_query_delete(query);
+    } 
+    return result;
+}
+
+- (BOOL) doesCoverArtCacheExist
+{
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSString *basePath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
+    NSString *cacheDir = [basePath stringByAppendingPathComponent: @"CDPlayer"];
+    BOOL isdir;
+
+    if (([fm fileExistsAtPath: cacheDir isDirectory: &isdir] & isdir) == NO) {
+        if ([fm createDirectoryAtPath: cacheDir attributes: nil] == NO) {
+            NSLog(@"unable to create: %@", cacheDir);
+            return NO;
+        }
+    }
+
+    cacheDir = [cacheDir stringByAppendingPathComponent: @"coverart"];
+    if (([fm fileExistsAtPath: cacheDir isDirectory: &isdir] & isdir) == NO) {
+        if ([fm createDirectoryAtPath: cacheDir attributes: nil] == NO) {
+            NSLog(@"unable to create: %@", cacheDir);
+            return NO;
+        }
+    }
+    return YES;
+}
+#endif
+
+@end
 
 
 @implementation TrackList
@@ -108,6 +179,38 @@ static const long MSG_TIMEOUT = 10000;
     return [window isVisible];
 }
 
+- (NSString *) artist
+{
+    return artist;
+}
+
+- (NSString *) title
+{
+    return title;
+}
+
+- (NSString *) cdTitle
+{
+    return [titleField stringValue];
+}
+
+- (NSString *) trackTitle: (int) track
+{
+    NSString *msg = nil;
+ 
+    if (track >= 0) {
+        if (nil == toc) {
+            msg = [NSString stringWithFormat: _(@"Track %d"), track];
+        } else {
+            NSArray *tracks = [toc objectForKey: @"tracks"];
+
+            msg = [NSString stringWithFormat: @"%@",
+                [[tracks objectAtIndex: track-1] objectForKey: @"title"]];
+        }
+    }
+    return msg;
+}
+
 - (void) setTOC: (NSDictionary *) newTOC
 {
     ASSIGN(toc, newTOC);
@@ -154,18 +257,7 @@ static const long MSG_TIMEOUT = 10000;
 
 - (void) setPlaysTrack: (int) track andNotify: (BOOL) andNotify
 {
-    NSString *msg = nil;
- 
-    if (track >= 0) {
-        if (nil == toc) {
-            msg = [NSString stringWithFormat: _(@"Track %d"), track];
-        } else {
-            NSArray *tracks = [toc objectForKey: @"tracks"];
-
-            msg = [NSString stringWithFormat: @"%@",
-                [[tracks objectAtIndex: track-1] objectForKey: @"title"]];
-        }
-    }
+    NSString *msg = [self trackTitle: track];
 
 #ifdef NOTIFICATIONS
     if ((playsTrack != track) && andNotify) {
@@ -287,7 +379,9 @@ static const long MSG_TIMEOUT = 10000;
             } else {
             }
         }    // for (i = 0; i < [searchPaths count]; i++)
-    }    // if (cddbServer) {
+    } else {
+        return;
+    }
  
     if (cddb != nil) {
         NSArray *matches;
@@ -397,6 +491,51 @@ static const long MSG_TIMEOUT = 10000;
     result = [[NSDictionary alloc] initWithContentsOfFile: cacheFile];
     return result;
 }
+
+#ifdef COVERART
+- (NSImage *) getCoverArtFromCache
+{
+    if (nil == toc) {
+        return nil;
+    }
+
+    if (![self doesCoverArtCacheExist]) {
+        return nil;
+    }
+
+    NSString *mbid = [self queryMusicbrainzId: [toc objectForKey: @"mbDiscId"]];
+    if ([mbid length] != 0) {
+        NSFileManager *fm = [NSFileManager defaultManager];
+        NSString *basePath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
+        NSString *cacheDir = [basePath stringByAppendingPathComponent: @"CDPlayer"];
+        cacheDir = [cacheDir stringByAppendingPathComponent: @"coverart"];
+        NSString *cacheFile = [cacheDir stringByAppendingPathComponent: [NSString stringWithFormat: @"%@.jpg", mbid]];
+            NSLog(cacheFile);
+        BOOL isdir;
+        if ([fm fileExistsAtPath: cacheFile isDirectory: &isdir] == NO) {
+            CaaCoverArt caaCA = caa_coverart_new("cdplayer-0.7.0");
+            if (caaCA != NULL) {
+                CaaImageData imgData = caa_coverart_fetch_front(caaCA, [mbid cString]);
+                if (imgData) {
+                    int imgSize = caa_imagedata_size(imgData);
+                    if (imgSize != 0) {
+                        NSData *data = [NSData dataWithBytes: caa_imagedata_data(imgData) length: imgSize];
+                        [fm createFileAtPath: cacheFile contents: data attributes:nil];
+                    }
+                }
+                caa_imagedata_delete(imgData);
+            }
+            caa_coverart_delete(caaCA);
+        }
+        if ([fm fileExistsAtPath: cacheFile isDirectory: &isdir] == YES) {
+            NSLog(@"file %@ exists", cacheFile);
+            NSImage *image = [[[NSImage alloc] initWithContentsOfFile: cacheFile] autorelease];
+            return image;
+        }
+    }
+    return nil;
+}
+#endif
 
 - (int) numberOfTracksInTOC
 {

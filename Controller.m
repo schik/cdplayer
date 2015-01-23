@@ -202,7 +202,6 @@
 {
     [self createMenu];
     player = [Player sharedPlayer];
-    [player buildInterface];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -223,7 +222,7 @@
 
     [TrackList sharedTrackList];
     if ([defaults integerForKey: @"ShowTrackListOnStartup"]) {
-        [self showTrackList: self];
+        [player showTrackList: self];
     }
 
     tmpFileName =[NSString stringWithFormat: @"%@/cdplayer.fifo", NSTemporaryDirectory()];
@@ -281,11 +280,6 @@
 - (void) showPrefPanel: (id)sender
 {
     [[Preferences singleInstance] showPanel: self];
-}
-
-- (void) showTrackList: (id)sender
-{
-    [[TrackList sharedTrackList] activate];
 }
  
 - (void) queryCddb: (id)sender

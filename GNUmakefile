@@ -20,8 +20,7 @@ CDPlayer_OBJC_FILES = \
 	FreeDBView.m \
 	GeneralView.m \
 	BundleManager.m \
-	SliderCell.m \
-	LED.m
+	SliderCell.m
 
 CDPlayer_C_FILES = \
 	rb.c
@@ -31,11 +30,17 @@ CDPlayer_C_FILES = \
 #
 ifneq ($(notifications), no)
     CDPlayer_OBJCFLAGS += -DNOTIFICATIONS
-    CDPlayer_GUI_LIBS = -lDBusKit
+    CDPlayer_GUI_LIBS += -lDBusKit
+endif
+
+ifeq ($(coverart), yes)
+    CDPlayer_OBJCFLAGS += -DCOVERART
+    CDPlayer_GUI_LIBS += -lmusicbrainz4 -lcoverart
 endif
 
 # The Resource files to be copied into the app's resources directory
 CDPlayer_RESOURCE_FILES = \
+	Resources/Player.gorm \
 	Resources/TrackList.gorm \
 	Images/*.tiff \
 	CDPlayer.help

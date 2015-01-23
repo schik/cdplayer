@@ -53,6 +53,14 @@
 - (void) saveCddbResultInCache: (NSString *) discid
                         cdInfo: (NSDictionary *) cdInfo;
 
+- (NSString *) artist;
+- (NSString *) title;
+- (NSString *) cdTitle;
+- (NSString *) trackTitle: (int) track;
+#ifdef COVERART
+- (NSImage *) getCoverArtFromCache;
+#endif
+
 /**
  * <p>Tries to retrieve cached cddb data for a CD from the local cache.
  * This method is executed exactly once when the CD has been detected.</p>

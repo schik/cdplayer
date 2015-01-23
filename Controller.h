@@ -16,7 +16,6 @@
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)theApplication;
 - (BOOL)applicationShouldTerminate:(NSApplication *)sender;
 - (void)showPrefPanel:(id)sender;
-- (void)showTrackList:(id)sender;
 - (void)queryCddb:(id)sender;
 - (void)showMyHelp:(id)sender;
 
