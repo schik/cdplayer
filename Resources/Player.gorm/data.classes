@@ -1,0 +1,43 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "eject:",
+	    "showTrackList:",
+	    "next:",
+	    "pause:",
+	    "play:",
+	    "prev:",
+	    "setVolume:"
+	);
+	Super = NSObject;
+    };
+    Player = {
+	Actions = (
+	    "pause:",
+	    "stop:",
+	    "next:",
+	    "prev:",
+	    "eject:",
+	    "setVolume:",
+	    "play:",
+	    "showTrackList:"
+	);
+	Outlets = (
+	    cdLabel,
+	    trackLabel,
+	    timeLabel,
+	    next,
+	    pause,
+	    play,
+	    prev,
+	    stop,
+	    volume,
+	    window,
+	    coverArt,
+	    eject,
+	    trackList
+	);
+	Super = NSObject;
+    };
+}
