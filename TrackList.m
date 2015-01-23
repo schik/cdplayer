@@ -85,7 +85,6 @@ static const long MSG_TIMEOUT = 10000;
                 int required_size = mb4_release_get_id(rel, mbid, 0);
                 mbid = (char*)malloc(required_size + 1);
                 required_size = mb4_release_get_id(rel, mbid, required_size+1);
-                NSLog(@"MBID is %s", mbid);
                 result = [NSString stringWithCString: mbid];
                 free(mbid);
             } else {
@@ -510,7 +509,6 @@ static const long MSG_TIMEOUT = 10000;
         NSString *cacheDir = [basePath stringByAppendingPathComponent: @"CDPlayer"];
         cacheDir = [cacheDir stringByAppendingPathComponent: @"coverart"];
         NSString *cacheFile = [cacheDir stringByAppendingPathComponent: [NSString stringWithFormat: @"%@.jpg", mbid]];
-            NSLog(cacheFile);
         BOOL isdir;
         if ([fm fileExistsAtPath: cacheFile isDirectory: &isdir] == NO) {
             CaaCoverArt caaCA = caa_coverart_new("cdplayer-0.7.0");
@@ -528,7 +526,6 @@ static const long MSG_TIMEOUT = 10000;
             caa_coverart_delete(caaCA);
         }
         if ([fm fileExistsAtPath: cacheFile isDirectory: &isdir] == YES) {
-            NSLog(@"file %@ exists", cacheFile);
             NSImage *image = [[[NSImage alloc] initWithContentsOfFile: cacheFile] autorelease];
             return image;
         }
