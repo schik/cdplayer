@@ -37,6 +37,9 @@
     NSDictionary *toc;
     NSString *artist;
     NSString *title;
+#ifdef COVERART
+    NSString *pathToFrontImage;
+#endif
 }
 
 - (id) init;

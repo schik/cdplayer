@@ -165,6 +165,9 @@ static const long MSG_TIMEOUT = 10000;
     RELEASE(toc);
     RELEASE(artist);
     RELEASE(title);
+#ifdef COVERART
+    RELEASE(pathToFrontImage);
+#endif
     [super dealloc];
 }
 
@@ -274,6 +277,11 @@ static const long MSG_TIMEOUT = 10000;
                 if (remote) {
                     NSBundle *bundle = [NSBundle bundleForClass: [self class]];
                     NSString *iconPath = [bundle pathForResource: @"app" ofType: @"tiff"];
+#ifdef COVERART
+                    if (nil != pathToFrontImage) {
+                        iconPath = pathToFrontImage;
+                    }
+#endif
 
                     [remote Notify: @"CDPlayer" 
                                   : 0 
@@ -494,43 +502,48 @@ static const long MSG_TIMEOUT = 10000;
 #ifdef COVERART
 - (NSImage *) getCoverArtFromCache
 {
-    if (nil == toc) {
-        return nil;
-    }
+    // load the default image
+    NSString *path = [[NSBundle mainBundle] pathForResource: @"disc" ofType: @"tiff"];
+    NSImage *image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
 
-    if (![self doesCoverArtCacheExist]) {
-        return nil;
-    }
-
-    NSString *mbid = [self queryMusicbrainzId: [toc objectForKey: @"mbDiscId"]];
-    if ([mbid length] != 0) {
-        NSFileManager *fm = [NSFileManager defaultManager];
-        NSString *basePath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
-        NSString *cacheDir = [basePath stringByAppendingPathComponent: @"CDPlayer"];
-        cacheDir = [cacheDir stringByAppendingPathComponent: @"coverart"];
-        NSString *cacheFile = [cacheDir stringByAppendingPathComponent: [NSString stringWithFormat: @"%@.jpg", mbid]];
-        BOOL isdir;
-        if ([fm fileExistsAtPath: cacheFile isDirectory: &isdir] == NO) {
-            CaaCoverArt caaCA = caa_coverart_new("cdplayer-0.7.0");
-            if (caaCA != NULL) {
-                CaaImageData imgData = caa_coverart_fetch_front(caaCA, [mbid cString]);
-                if (imgData) {
-                    int imgSize = caa_imagedata_size(imgData);
-                    if (imgSize != 0) {
-                        NSData *data = [NSData dataWithBytes: caa_imagedata_data(imgData) length: imgSize];
-                        [fm createFileAtPath: cacheFile contents: data attributes:nil];
+    [window setMiniwindowImage: [NSApp applicationIconImage]];
+    if ((nil != toc)  && [self doesCoverArtCacheExist]) {
+        NSString *mbid = [self queryMusicbrainzId: [toc objectForKey: @"mbDiscId"]];
+        if ([mbid length] != 0) {
+            NSFileManager *fm = [NSFileManager defaultManager];
+            NSString *basePath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
+            NSString *cacheDir = [basePath stringByAppendingPathComponent: @"CDPlayer"];
+            cacheDir = [cacheDir stringByAppendingPathComponent: @"coverart"];
+            NSString *cacheFile = [cacheDir stringByAppendingPathComponent: [NSString stringWithFormat: @"%@.jpg", mbid]];
+            BOOL isdir;
+            if ([fm fileExistsAtPath: cacheFile isDirectory: &isdir] == NO) {
+                CaaCoverArt caaCA = caa_coverart_new("cdplayer-0.7.0");
+                if (caaCA != NULL) {
+                    CaaImageData imgData = caa_coverart_fetch_front(caaCA, [mbid cString]);
+                    if (imgData) {
+                        int imgSize = caa_imagedata_size(imgData);
+                        if (imgSize != 0) {
+                            NSData *data = [NSData dataWithBytes: caa_imagedata_data(imgData) length: imgSize];
+                            [fm createFileAtPath: cacheFile contents: data attributes:nil];
+                        }
                     }
+                    caa_imagedata_delete(imgData);
                 }
-                caa_imagedata_delete(imgData);
+                caa_coverart_delete(caaCA);
             }
-            caa_coverart_delete(caaCA);
-        }
-        if ([fm fileExistsAtPath: cacheFile isDirectory: &isdir] == YES) {
-            NSImage *image = [[[NSImage alloc] initWithContentsOfFile: cacheFile] autorelease];
-            return image;
+            if ([fm fileExistsAtPath: cacheFile isDirectory: &isdir] == YES) {
+                ASSIGN(pathToFrontImage, cacheFile);
+                image = [[[NSImage alloc] initWithContentsOfFile: cacheFile] autorelease];
+            }
         }
     }
-    return nil;
+    NSImage *imgCopy = [image copy];
+    [imgCopy setScalesWhenResized: YES];
+    [imgCopy setSize: NSMakeSize(48,48)];
+    [window setMiniwindowImage: imgCopy];
+    RELEASE(imgCopy);
+
+    return image;
 }
 #endif
 

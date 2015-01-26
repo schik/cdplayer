@@ -162,6 +162,13 @@ static Player *sharedPlayer = nil;
         NSString *path = [[NSBundle mainBundle] pathForResource: @"disc" ofType: @"tiff"];
         image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
     }
+   
+    NSImage *imgCopy = [image copy];
+    [imgCopy setScalesWhenResized: YES];
+    [imgCopy setSize: NSMakeSize(48,48)];
+    [window setMiniwindowImage: imgCopy];
+    RELEASE(imgCopy);
+
     [coverArt setImage: image];
 }
 #endif
