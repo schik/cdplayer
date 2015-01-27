@@ -44,6 +44,7 @@ static Player *sharedPlayer = nil;
 - (void) ensureOutput;
 - (BOOL) reInitOutputIfNeeded;
 - (void) playLoopIteration;
+- (void) setCurrentTrack: (int) current;
 #ifdef COVERART
 - (void) displayCoverArt;
 #endif
@@ -151,10 +152,29 @@ static Player *sharedPlayer = nil;
     } else {
         // If no data can be read, we assume that playing has stopped
         if (doRepeat) {
-            [self play: self];
+            [self setCurrentTrack: 1];
         } else {
             [self stop: self];
         }
+    }
+}
+
+- (void) setCurrentTrack: (int) current
+{
+    BOOL restart = NO;
+    if (currentState == AUDIOCD_PLAYING) {
+        restart = YES;
+        [self pause: self];
+    }
+
+    if((currentState == AUDIOCD_PLAYING) ||
+       (currentState == AUDIOCD_PAUSED)) {
+        [drive seek: current];
+        currentTrack = current;
+    }
+
+    if (YES == restart) {
+        [self play: self];
     }
 }
 
@@ -289,7 +309,7 @@ static Player *sharedPlayer = nil;
             inputSize = 0;
             // If no data can be read, we assume that playing has stopped
             if (doRepeat) {
-                [self play: self];
+                [self setCurrentTrack: 1];
             } else {
                 [self stop: self];
             }
@@ -547,34 +567,24 @@ static Player *sharedPlayer = nil;
 
 - (void) next: (id) sender
 {
-    BOOL restart = NO;
+    int current = currentTrack;
+
     if([drive cdPresent] == NO) {
         return;
     }
 
-    currentTrack++;
-    if(currentTrack > [drive totalTrack]) {
-        currentTrack = 1;
+    current++;
+    if(current > [drive totalTrack]) {
+        current = 1;
     }
 
-    if (currentState == AUDIOCD_PLAYING) {
-        restart = YES;
-        [self pause: self];
-    }
-
-    if((currentState == AUDIOCD_PLAYING) ||
-       (currentState == AUDIOCD_PAUSED)) {
-        [drive seek: currentTrack];
-    }
-
-    if (YES == restart) {
-        [self play: self];
-    }
+    [self setCurrentTrack: current];
 }
 
 - (void) prev: (id) sender
 {
-    BOOL restart = NO;
+    int current = currentTrack;
+
     if([drive cdPresent] == NO) {
         return;
     }
@@ -585,25 +595,13 @@ static Player *sharedPlayer = nil;
     // of the current track before jumping back one more track.
     if ((currentState == AUDIOCD_STOPPED) ||
         ([drive currentSec] == 0 && [drive currentMin] == 0)) {
-        currentTrack--;
-        if(currentTrack < 1) {
-            currentTrack = [drive totalTrack];
+        current--;
+        if(current < 1) {
+            current = [drive totalTrack];
         }
     }
 
-    if (currentState == AUDIOCD_PLAYING) {
-        restart = YES;
-        [self pause: self];
-    }
-
-    if((currentState == AUDIOCD_PLAYING) ||
-       (currentState == AUDIOCD_PAUSED)) {
-        [drive seek: currentTrack];
-    }
-
-    if (YES == restart) {
-        [self play: self];
-    }
+    [self setCurrentTrack: current];
 }
 
 
