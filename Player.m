@@ -150,7 +150,11 @@ static Player *sharedPlayer = nil;
         [output playChunk: streamChunk];
     } else {
         // If no data can be read, we assume that playing has stopped
-        [self stop: self];
+        if (doRepeat) {
+            [self play: self];
+        } else {
+            [self stop: self];
+        }
     }
 }
 
@@ -284,7 +288,11 @@ static Player *sharedPlayer = nil;
         if (inputSize <= 0) {
             inputSize = 0;
             // If no data can be read, we assume that playing has stopped
-            [self stop: self];
+            if (doRepeat) {
+                [self play: self];
+            } else {
+                [self stop: self];
+            }
         }
     } else {
         inputSize = 0;
@@ -497,6 +505,38 @@ static Player *sharedPlayer = nil;
     }
 
     [drive eject];
+}
+
+- (void) repeat: (id) sender
+{
+    doRepeat = !doRepeat;
+
+    NSBundle *bundle = [NSBundle mainBundle];
+    NSString *path = nil;
+    NSImage *image;
+    if (doRepeat) {
+        path = [bundle pathForResource: @"repeat_on" ofType: @"tiff"];
+    } else {
+        path = [bundle pathForResource: @"repeat" ofType: @"tiff"];
+    }
+    image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
+    [repeat setImage: image];
+}
+
+- (void) shuffle: (id) sender
+{
+    doShuffle = !doShuffle;
+
+    NSBundle *bundle = [NSBundle mainBundle];
+    NSString *path = nil;
+    NSImage *image;
+    if (doShuffle) {
+        path = [bundle pathForResource: @"shuffle_on" ofType: @"tiff"];
+    } else {
+        path = [bundle pathForResource: @"shuffle" ofType: @"tiff"];
+    }
+    image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
+    [shuffle setImage: image];
 }
 
 - (void) setVolume: (id) sender

@@ -3,12 +3,14 @@
     FirstResponder = {
 	Actions = (
 	    "eject:",
-	    "showTrackList:",
+	    "repeat:",
+	    "shuffle:",
 	    "next:",
 	    "pause:",
 	    "play:",
 	    "prev:",
-	    "setVolume:"
+	    "setVolume:",
+	    "showTrackList:"
 	);
 	Super = NSObject;
     };
@@ -21,7 +23,9 @@
 	    "eject:",
 	    "setVolume:",
 	    "play:",
-	    "showTrackList:"
+	    "showTrackList:",
+	    "repeat:",
+	    "shuffle:"
 	);
 	Outlets = (
 	    cdLabel,
@@ -36,7 +40,9 @@
 	    window,
 	    coverArt,
 	    eject,
-	    trackList
+	    trackList,
+	    repeat,
+	    shuffle
 	);
 	Super = NSObject;
     };
