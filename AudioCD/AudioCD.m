@@ -71,10 +71,12 @@ static BOOL readerThreadRunning = NO;
 
     if (NULL != rb) {
         rb_free(rb);
+        rb = NULL;
     }
 
     if (NULL != drive) {
         cdda_close(drive);
+        drive = NULL;
     }
 
     if (NULL != paranoia) {
@@ -207,6 +209,7 @@ static BOOL readerThreadRunning = NO;
 
     if (NULL != rb) {
         rb_free(rb);
+        rb = NULL;
     }
 }
 
