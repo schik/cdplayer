@@ -61,36 +61,11 @@
     NSRect rect;
 
     rect = cellFrame;
-
-    [[NSColor controlDarkShadowColor] set];
-
-    rect.size.width = 1;
-    rect.size.height = 1;
-    rect.origin.y += (cellFrame.size.height - 4) / 2 + 2;
-    NSRectFill (rect);
-
-    rect.origin.y += 1;
-    NSRectFill (rect);
-
-    rect.origin.x += 1;
-    rect.size.width = cellFrame.size.width - 2;
-    rect.origin.y++;
-    NSRectFill (rect);
-
-    [[NSColor controlLightHighlightColor] set];
-
-    rect.origin.x = NSMaxX (cellFrame) - 1;  
-    rect.size.width = 1;
-    rect.origin.y--;
-    NSRectFill (rect);
-
-    rect.origin.y--;
-    NSRectFill (rect);
-
-    rect.origin.x = NSMinX (cellFrame) + 1;
-    rect.size.width = NSWidth (cellFrame) - 2;
-    rect.origin.y--;
-    NSRectFill (rect);
+    rect.size.height = cellFrame.size.height / 4;
+    rect.origin.y += cellFrame.size.height / 4 + 2;
+        
+    [[NSColor colorWithCalibratedHue: .0 saturation: .0 brightness: .34 alpha: 1.] set];
+    NSRectFill(rect);
 }
 
 - (BOOL) isOpaque
