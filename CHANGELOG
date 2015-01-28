@@ -3,6 +3,7 @@ Version 0.7.0
 
 - New user interface with flat design and no more LED (Gormified).
 - Retrieve cover art from Musicbrainz (optional).
+- Fixed a crash when skipping back-/forward several times
 
 Version 0.6.0
 -------------
