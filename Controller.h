@@ -17,7 +17,6 @@
 - (BOOL)applicationShouldTerminate:(NSApplication *)sender;
 - (void)showPrefPanel:(id)sender;
 - (void)queryCddb:(id)sender;
-- (void)showMyHelp:(id)sender;
 
 @end
 

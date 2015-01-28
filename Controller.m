@@ -148,10 +148,6 @@
                     action: @selector(showPrefPanel:)
              keyEquivalent: @""];
 
-    [info addItemWithTitle: _(@"Help")
-                    action: @selector(showMyHelp:)
-             keyEquivalent: @"?"];
-
     ///// Create the windows submenu /////
     windows = AUTORELEASE([NSMenu new]);
     [menu setSubmenu: windows
@@ -287,18 +283,6 @@
     [[TrackList sharedTrackList] queryCddb: sender];
 }
 
-- (void) showMyHelp: (id)sender
-{
-    NSBundle *mb = [NSBundle mainBundle];
-    NSString *file = [mb pathForResource: @"CDPlayer" ofType: @"help"]; 
- 
-    if (file) {
-        [[NSWorkspace sharedWorkspace] openFile: file];
-        return;
-    }
-    NSBeep();
-}
- 
 - (BOOL) validateMenuItem: (NSMenuItem*)item
 {
     BOOL ret = [[TrackList sharedTrackList] validateMenuItem: item];

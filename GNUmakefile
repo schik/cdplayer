@@ -42,8 +42,7 @@ endif
 CDPlayer_RESOURCE_FILES = \
 	Resources/Player.gorm \
 	Resources/TrackList.gorm \
-	Images/*.tiff \
-	CDPlayer.help
+	Images/*.tiff
 
 CDPlayer_LANGUAGES=English German French
 CDPlayer_LOCALIZED_RESOURCE_FILES = \
