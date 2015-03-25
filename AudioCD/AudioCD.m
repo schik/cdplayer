@@ -503,6 +503,10 @@ static BOOL readerThreadRunning = NO;
     do {
         if ((NULL == drive) || (0 != cdio_get_media_changed(drive->p_cdio))) {
             [self checkAllDevicesForCD: device];
+            if (NULL != drive) {
+                // reset the media change status by reading it
+                cdio_get_media_changed(drive->p_cdio);
+            }
         }
 
         // is a disc present in the drive?
@@ -663,7 +667,7 @@ static int cddb_dec_digit_sum(int n)
     }
     return result;
 #else
-    return @""
+    return @"";
 #endif
 }
 
