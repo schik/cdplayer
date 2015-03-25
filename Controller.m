@@ -111,10 +111,6 @@
                     action: action
              keyEquivalent: @""];
 
-    [menu addItemWithTitle: _(@"Show Track List")
-                    action: @selector(showTrackList:)
-             keyEquivalent: @"l"];
-
     [menu addItemWithTitle: _(@"Query CDDB")
                     action: @selector(queryCddb:)
              keyEquivalent: @"Q"];
