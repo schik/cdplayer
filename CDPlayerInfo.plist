@@ -7,7 +7,7 @@
     Copyright = "Copyright (C) 1999-2015 by ACKyugo, Andreas Schik";
     CopyrightDescription = "Released under GPL";
     FullVersionID = 0.7.0;
-    URL = "http://blog.andreasschik.de";
+    URL = "http://www.andreasschik.de";
     NSServices = (
       {
         NSPortName = CDPlayer;
