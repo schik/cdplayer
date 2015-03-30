@@ -2,8 +2,13 @@ Version 0.7.0
 -------------
 
 - New user interface with flat design and no more LED (Gormified).
+- Always try to get CD info from the net, unless there is cached
+  information. Users nowadays are always online, hence there is no
+  need to save bandwidth.
+- Add repeat functionality.
 - Retrieve cover art from Musicbrainz (optional).
 - Fixed a crash when skipping back-/forward several times
+- Fixed a crash when stared via its service playCD.
 
 Version 0.6.0
 -------------
