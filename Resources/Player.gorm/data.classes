@@ -4,7 +4,6 @@
 	Actions = (
 	    "eject:",
 	    "repeat:",
-	    "shuffle:",
 	    "next:",
 	    "pause:",
 	    "play:",
@@ -24,8 +23,7 @@
 	    "setVolume:",
 	    "play:",
 	    "showTrackList:",
-	    "repeat:",
-	    "shuffle:"
+	    "repeat:"
 	);
 	Outlets = (
 	    cdLabel,
@@ -41,8 +39,7 @@
 	    coverArt,
 	    eject,
 	    trackList,
-	    repeat,
-	    shuffle
+	    repeat
 	);
 	Super = NSObject;
     };

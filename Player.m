@@ -543,22 +543,6 @@ static Player *sharedPlayer = nil;
     [repeat setImage: image];
 }
 
-- (void) shuffle: (id) sender
-{
-    doShuffle = !doShuffle;
-
-    NSBundle *bundle = [NSBundle mainBundle];
-    NSString *path = nil;
-    NSImage *image;
-    if (doShuffle) {
-        path = [bundle pathForResource: @"shuffle_on" ofType: @"tiff"];
-    } else {
-        path = [bundle pathForResource: @"shuffle" ofType: @"tiff"];
-    }
-    image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
-    [shuffle setImage: image];
-}
-
 - (void) setVolume: (id) sender
 {
     [drive setVolumeLevel: [volume floatValue]];

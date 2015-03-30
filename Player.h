@@ -43,7 +43,6 @@
 	BOOL togglePlayButton;
 	BOOL togglePauseButton;
 	BOOL doRepeat;
-	BOOL doShuffle;
 
 	NSTimer		*timer;
 
@@ -63,7 +62,6 @@
 	id stop;
 	id next;
 	id repeat;
-	id shuffle;
 	id eject;
 	id trackList;
 	id volume;
@@ -80,7 +78,6 @@
 - (void) showTrackList:(id)sender;
 - (void) setVolume: (id) sender;
 - (void) repeat: (id) sender;
-- (void) shuffle: (id) sender;
 
 - (void) playTrack: (NSNotification *)not;
 - (void) play: (id)sender;
