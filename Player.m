@@ -45,7 +45,7 @@ static Player *sharedPlayer = nil;
 - (BOOL) reInitOutputIfNeeded;
 - (void) playLoopIteration;
 - (void) setCurrentTrack: (int) current;
-#ifdef COVERART
+#ifdef MUSICBRAINZ
 - (void) displayCoverArt;
 #endif
 @end
@@ -178,21 +178,20 @@ static Player *sharedPlayer = nil;
     }
 }
 
-#ifdef COVERART
+#ifdef MUSICBRAINZ
 - (void) displayCoverArt
 {
     NSImage *image = [[TrackList sharedTrackList] getCoverArtFromCache];
     if (nil == image) {
+        [window setMiniwindowImage: [NSApp applicationIconImage]];
         NSString *path = [[NSBundle mainBundle] pathForResource: @"disc" ofType: @"tiff"];
         image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
+    } else {
+        NSImage *imgCopy = [image copy];
+        [imgCopy setSize: NSMakeSize(48,48)];
+        [window setMiniwindowImage: imgCopy];
+        RELEASE(imgCopy);
     }
-   
-    NSImage *imgCopy = [image copy];
-    [imgCopy setScalesWhenResized: YES];
-    [imgCopy setSize: NSMakeSize(48,48)];
-    [window setMiniwindowImage: imgCopy];
-    RELEASE(imgCopy);
-
     [coverArt setImage: image];
 }
 #endif
@@ -341,7 +340,7 @@ static Player *sharedPlayer = nil;
         mustReadTOC = NO;
         [[TrackList sharedTrackList] setTOC: [drive readTOC]];
         [cdLabel setStringValue: [[TrackList sharedTrackList] cdTitle]];
-#ifdef COVERART
+#ifdef MUSICBRAINZ
         [self displayCoverArt];
 #endif
     }
