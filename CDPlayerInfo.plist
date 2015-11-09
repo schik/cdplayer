@@ -2,11 +2,11 @@
     ApplicationDescription = "A GNUstep CD player application.";
     ApplicationIcon = "app.tiff";
     ApplicationName = CDPlayer;
-    ApplicationRelease = 0.7.0;
+    ApplicationRelease = 0.8.0;
     Authors = ("ACKyugo <ackyugo@geocities.co.jp>", "Andreas Schik <andreas@schik.de>");
     Copyright = "Copyright (C) 1999-2015 by ACKyugo, Andreas Schik";
     CopyrightDescription = "Released under GPL";
-    FullVersionID = 0.7.0;
+    FullVersionID = 0.8.0;
     URL = "http://www.andreasschik.de";
     NSServices = (
       {
