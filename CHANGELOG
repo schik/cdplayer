@@ -1,3 +1,15 @@
+Version 0.8.0
+-------------
+
+- No longer support the user default "SuppressAutomaticCddbQuery"
+  to suppress Cddb queries. This variable was more or less hidden
+  and thus not used.
+- Cddb is no longer built by default.
+- The replacement to request CD information is Musicbrainz which is
+  accessed via the Musicbrainz bundle. This bundle also retrieves cover
+  art.
+- Disc information is no longer cached.
+
 Version 0.7.0
 -------------
 
@@ -17,7 +29,7 @@ Version 0.6.0
 - Use Cynthiune's output backends for audio output.
 - Removed the preference pane for AudioCD.bundle as it no longer
   has any preferences.
-- Added an output volume control
+- Added an output volume control.
 
 Version 0.5.1
 -------------

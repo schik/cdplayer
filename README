@@ -19,14 +19,14 @@ o As CDPlayer uses Cynthiune's output bundles to make the CD audible, you must
   install Cynthiune before you can build CDPlayer.
 
 o Also Required is Cddb.bundle by Yen-Ju Chen. This bundle is included with
-  CDPlayer and built automatically. See below for details.
+  CDPlayer. See below for details.
 
 o To build CDPlayer simply do the following:
-	make
+        make
   This will build CDPlayer and the AudioCD and Cddb bundles.
 
 o To install CDPlayer in your global GNUstep directory do:
-	make install
+        make install
 
   This will install CDPlayer in $(GNUSTEP_LOCAL_ROOT)/Applications and the
   AudioCD and Cddb bundles in $(GNUSTEP_SYSTEM_ROOT)/Library/Bundles.
@@ -37,12 +37,17 @@ o By default, CDPlayer sends out desktop notifications on each new track to
   building CDPlayer like this:
         make notifications=no
 
+o As of version 0.8.0, CDPlayer uses the Musicbrainz service to retrieve disc
+  information. You must install libmusicbrainz5, libdiscid and libcoverart
+  to build CDPlayer. To turn off Musicbrainz support do:
+        make musicbrainz=no
+  Cddb is turned off by default. To turn on Cddb support do:
+        make cddb=yes
+
 o As of version 0.7.0, CDPlayer is able to display cover art, i.e. the front
-  cover of the currently played CD is displayed in the main window. To use
-  this feature you must install libmusicbrainz4, libdiscid and libcoverart
-  before building CDPlayer. This feature is turned off by default. CDPlayer
-  must be built like this to enable cover art display:
-        make coverart=yes
+  cover of the currently played CD is displayed in the main window. This
+  feature is integrated into the Musicbrainz bundle and automatically available.
+  It can no longer be turned off.
 
 
 Cynthiune
@@ -55,11 +60,8 @@ http://gap.nongnu.org/
 
 CDDB/FreeDB suport
 ------------------
-CDPlayer uses the Cddb bundle from Yen-Ju Chen
-(http://www.people.virginia.edu/~yc2w/GNUstep/english/) to access FreeDB
-databases. Cddb is integrated with CDPlayer and will automatically
-be built and installed.
-
+CDPlayer uses the Cddb bundle from Yen-Ju Chen to access FreeDB
+databases. The Cddb source code is integrated with CDPlayer.
 The original Cddb bundle project is available here:
 
 http://savannah.nongnu.org/projects/musicbox/
@@ -80,6 +82,8 @@ play the first on, it can find.
 Cached Data
 -----------
 
-CDPlayer caches Cddb data and cover art files. This speeds up loading of already
-known CDs. The files are located in $HOME/GNUstep/Library/CDPlayer/[discinfo|coverart].
+CDPlayer caches cover art files. This speeds up loading of already known CDs.
+The files are located in $HOME/GNUstep/Library/CDPlayer/coverart.
+Cddb information is no longer cached. However, existing cache files in
+$HOME/GNUstep/Library/CDPlayer/coverart/discinfo are still used.
 Deleting these files should do no harm.
