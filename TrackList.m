@@ -23,15 +23,11 @@
 
 
 #import <AppKit/AppKit.h>
-#import <Cddb/Cddb.h>
 #import <AudioCD/AudioCDProtocol.h>
 
 #ifdef NOTIFICATIONS
 #import <DBusKit/DBusKit.h>
 #endif
-
-#import <musicbrainz4/mb4_c.h>
-#import <coverart/caa_c.h>
 
 #import "TrackList.h"
 
@@ -56,73 +52,6 @@ static NSString * const DBUS_PATH = @"/org/freedesktop/Notifications";
 
 static const long MSG_TIMEOUT = 10000;
 #endif
-
-@interface TrackList (Private)
-#ifdef COVERART
-- (NSString *) queryMusicbrainzId: (NSString *)discId;
-- (BOOL) doesCoverArtCacheExist;
-#endif
-@end
-
-@implementation TrackList (Private)
-
-#ifdef COVERART
-- (NSString *) queryMusicbrainzId: (NSString *)discId
-{
-    NSString *result = @"";
-    if ((nil == discId) || ([discId length] == 0)) {
-        return result;
-    }
-
-    Mb4Query query = mb4_query_new("cdplayer-0.7.0", NULL, 0);
-    if (query != NULL) {
-        Mb4ReleaseList rellist = mb4_query_lookup_discid(query, [discId cString]);
-        if (rellist != NULL) {
-            int size = mb4_release_list_size(rellist);
-            if (size > 0) {
-                Mb4Release rel = mb4_release_list_item(rellist, 0);
-                char *mbid = NULL;
-                int required_size = mb4_release_get_id(rel, mbid, 0);
-                mbid = (char*)malloc(required_size + 1);
-                required_size = mb4_release_get_id(rel, mbid, required_size+1);
-                result = [NSString stringWithCString: mbid];
-                free(mbid);
-            } else {
-                NSLog(@"No releases found for disc ID %@", discId);
-            }
-            mb4_release_list_delete(rellist);
-        }
-        mb4_query_delete(query);
-    } 
-    return result;
-}
-
-- (BOOL) doesCoverArtCacheExist
-{
-    NSFileManager *fm = [NSFileManager defaultManager];
-    NSString *basePath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
-    NSString *cacheDir = [basePath stringByAppendingPathComponent: @"CDPlayer"];
-    BOOL isdir;
-
-    if (([fm fileExistsAtPath: cacheDir isDirectory: &isdir] & isdir) == NO) {
-        if ([fm createDirectoryAtPath: cacheDir attributes: nil] == NO) {
-            NSLog(@"unable to create: %@", cacheDir);
-            return NO;
-        }
-    }
-
-    cacheDir = [cacheDir stringByAppendingPathComponent: @"coverart"];
-    if (([fm fileExistsAtPath: cacheDir isDirectory: &isdir] & isdir) == NO) {
-        if ([fm createDirectoryAtPath: cacheDir attributes: nil] == NO) {
-            NSLog(@"unable to create: %@", cacheDir);
-            return NO;
-        }
-    }
-    return YES;
-}
-#endif
-
-@end
 
 
 @implementation TrackList
@@ -155,6 +84,8 @@ static const long MSG_TIMEOUT = 10000;
 
             [window setFrameAutosaveName: @"CDTrackListWindow"];
             [window setFrameUsingName: @"CDTrackListWindow"];
+
+            pathToFrontImage = nil;
         }
     }
     return sharedTrackList;
@@ -165,7 +96,7 @@ static const long MSG_TIMEOUT = 10000;
     RELEASE(toc);
     RELEASE(artist);
     RELEASE(title);
-#ifdef COVERART
+#ifdef MUSICBRAINZ
     RELEASE(pathToFrontImage);
 #endif
     [super dealloc];
@@ -225,7 +156,24 @@ static const long MSG_TIMEOUT = 10000;
         /*
          * Try to get locally cached cddb data for the CD.
          */
-        NSDictionary *cdInfo = [self getCddbResultFromCache: [toc objectForKey: @"cddbid"]];
+        NSDictionary *cdInfo = nil;
+        // TODO: CD Text
+
+        if (cdInfo == nil) {
+            // try to read (legacy) cache file
+            cdInfo = [self getCdInfoFromCache: [toc objectForKey: @"cddbid"]];
+        }
+#ifdef MUSICBRAINZ
+        if (cdInfo == nil) {
+            cdInfo = [self queryMusicbrainz];
+        }
+#endif
+#ifdef CDDB
+        if (cdInfo == nil) {
+            // Automatically query CDDB if disc is present
+            cdInfo = [self queryCddb];
+        }
+#endif
         if (cdInfo != nil) {
             int i;
             NSString *dspTitle;
@@ -277,7 +225,7 @@ static const long MSG_TIMEOUT = 10000;
                 if (remote) {
                     NSBundle *bundle = [NSBundle bundleForClass: [self class]];
                     NSString *iconPath = [bundle pathForResource: @"app" ofType: @"tiff"];
-#ifdef COVERART
+#ifdef MUSICBRAINZ
                     if (nil != pathToFrontImage) {
                         iconPath = pathToFrontImage;
                     }
@@ -285,11 +233,11 @@ static const long MSG_TIMEOUT = 10000;
 
                     [remote Notify: @"CDPlayer" 
                                   : 0 
-                                  : iconPath 
+                                  : @""
                                   : [titleField stringValue]
                                   : msg
                                   : [NSArray array]
-                                  : [NSDictionary dictionary]
+                                  : [NSDictionary dictionaryWithObjectsAndKeys: iconPath, @"image-path", nil]
                                   : MSG_TIMEOUT];
                 }
                 [c invalidate];
@@ -319,158 +267,18 @@ static const long MSG_TIMEOUT = 10000;
 {
     SEL action = [item action];
 
+#ifdef CDDB
     // without a TOC (=> no CD) we are not going to query
     // a FreeDB database
     if (sel_isEqual(action, @selector(queryCddb:))) {
         if (nil == toc)
             return NO;
     }
+#endif
     return YES;
 }
- 
- 
-- (NSString *) createCddbQuery: (NSDictionary *) theTOC
-{
-    int i;
-    NSArray *tracks;
-    NSMutableString *cddbQuery;
- 
-    tracks = [theTOC objectForKey: @"tracks"];
-    cddbQuery = [NSMutableString stringWithFormat: @"%@ %d",
-                            [theTOC objectForKey: @"cddbid"],
-                            [[theTOC objectForKey: @"numberOfTracks"] intValue]];
- 
-    for (i = 0; i < [tracks count]; i++) {
-        [cddbQuery appendFormat: @" %d", [[[tracks objectAtIndex: i] objectForKey: @"offset"] intValue]];
-    }
- 
-    [cddbQuery appendFormat: @" %d", [[theTOC objectForKey: @"discLength"] intValue] / CD_FRAMES];
- 
-    return cddbQuery;
-}
- 
- 
- 
-- (void) queryCddb: (id) sender
-{
-    NSString *cddbServer;
-    Cddb *cddb = nil;
- 
-    if (nil == toc)
-        return;
- 
-    cddbServer = [[NSUserDefaults standardUserDefaults] objectForKey: @"FreedbSite"];
- 
-    if (cddbServer && [cddbServer length]) {
-        int i;
-        NSArray *searchPaths;
-        NSString *bundlePath;
-        NSBundle *bundle;
-        Class bundleClass;
- 
-        // try to load the Cddb bundle
-        searchPaths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-                                                    NSUserDomainMask|NSLocalDomainMask|NSSystemDomainMask, YES);
- 
-        for (i = 0; i < [searchPaths count]; i++) {
-            bundlePath = [NSString stringWithFormat: @"%@/Bundles/Cddb.bundle", [searchPaths objectAtIndex: i]];
 
-            bundle = [NSBundle bundleWithPath: bundlePath];
-            if (bundle) {
-                bundleClass = [bundle principalClass];
-                if (bundleClass) {
-                    cddb = [bundleClass new];
-                    break;
-                } else {
-                }
-            } else {
-            }
-        }    // for (i = 0; i < [searchPaths count]; i++)
-    } else {
-        return;
-    }
- 
-    if (cddb != nil) {
-        NSArray *matches;
-        NSDictionary *cdInfo;
-        NSString *queryString = [self createCddbQuery: toc];
-        NSArray *tracks;
- 
-        [cddb setDefaultSite: cddbServer];
-        matches = [cddb query: queryString];
-        if ((matches != nil) && [matches count]) {
-            cdInfo = [cddb readWithCategory: [[matches objectAtIndex: 0] objectForKey: @"category"]
-                            discid: [[matches objectAtIndex: 0] objectForKey: @"discid"]
-                            postProcess: YES];
- 
-            if (cdInfo != nil) {
-                int i;
-                NSString *dspTitle;
- 
-                [self saveCddbResultInCache: [toc objectForKey: @"cddbid"] cdInfo: cdInfo];
-                ASSIGN(artist, [[cdInfo objectForKey: @"artists"] objectAtIndex: 0]);
-                ASSIGN(title, [cdInfo objectForKey: @"album"]);
- 
-                dspTitle = [NSString stringWithFormat: @"%@ - %@", artist, title];
- 
-                [titleField setStringValue: dspTitle];
- 
-                tracks = [toc objectForKey: @"tracks"];
- 
-                for (i = 0; i < [tracks count]; i++) {
-                    [[tracks objectAtIndex: i] setObject: [[cdInfo objectForKey: @"titles"] objectAtIndex: i]
-                                                forKey: @"title"];
-                    [[tracks objectAtIndex: i] setObject: [[cdInfo objectForKey: @"artists"] objectAtIndex: i]
-                                                forKey: @"artist"];
-                }
-                [trackListView reloadData];
-            } else {   // if (cdInfo != nil)
-                NSRunAlertPanel(@"CDPlayer",
-                        _(@"Couldn't read CD information."),
-                        _(@"OK"), nil, nil);
-            }
-        } else {
-            NSRunAlertPanel(@"CDPlayer",
-                    _(@"Couldn't find any matches."),
-                    _(@"OK"), nil, nil);
-        }
-    } else {    // if (cddb != nil)
-        NSRunAlertPanel(@"CDPlayer",
-                _(@"Couldn't find Cddb bundle."),
-                _(@"OK"), nil, nil);
-    }
-}
-
-- (void) saveCddbResultInCache: (NSString *) discid
-                        cdInfo: (NSDictionary *) cdInfo
-{
-    NSString *basePath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
-    NSString *cacheDir = [basePath stringByAppendingPathComponent: @"CDPlayer"];
-    NSString *cacheFile;
-    NSFileManager *fm = [NSFileManager defaultManager];
-    BOOL isdir;
-
-    if (([fm fileExistsAtPath: cacheDir isDirectory: &isdir] & isdir) == NO) {
-        if ([fm createDirectoryAtPath: cacheDir attributes: nil] == NO) {
-            NSLog(@"unable to create: %@", cacheDir);
-            return;
-        }
-    }
-    cacheDir = [cacheDir stringByAppendingPathComponent: @"discinfo"];
-
-    if (([fm fileExistsAtPath: cacheDir isDirectory: &isdir] & isdir) == NO) {
-        if ([fm createDirectoryAtPath: cacheDir attributes: nil] == NO) {
-            NSLog(@"unable to create: %@", cacheDir);
-            return;
-        }
-    }
-    cacheFile = [cacheDir stringByAppendingPathComponent: discid];
-    if ([fm fileExistsAtPath: cacheFile isDirectory: &isdir] == NO) {
-        [cdInfo writeToFile: cacheFile atomically: YES];
-    }
-}
-
-- (NSDictionary *) getCddbResultFromCache: (NSString *) discid
+- (NSDictionary *) getCdInfoFromCache: (NSString *) discid
 {
     NSDictionary *result = nil;
     NSString *basePath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
@@ -479,13 +287,6 @@ static const long MSG_TIMEOUT = 10000;
     NSFileManager *fm = [NSFileManager defaultManager];
     BOOL isdir;
 
-    // Automatically query CDDB if not turned off and if disc is present
-    if (nil != toc) {
-        NSUserDefaults	*defaults = [NSUserDefaults standardUserDefaults];
-        if (![defaults integerForKey: @"SuppressAutomaticCddbQuery"]) {
-            [self queryCddb: self];
-        }
-    }
     if (([fm fileExistsAtPath: cacheDir isDirectory: &isdir] & isdir) == NO) {
         return nil;
     }
@@ -498,54 +299,6 @@ static const long MSG_TIMEOUT = 10000;
     result = [[NSDictionary alloc] initWithContentsOfFile: cacheFile];
     return result;
 }
-
-#ifdef COVERART
-- (NSImage *) getCoverArtFromCache
-{
-    // load the default image
-    NSString *path = [[NSBundle mainBundle] pathForResource: @"disc" ofType: @"tiff"];
-    NSImage *image = [[[NSImage alloc] initWithContentsOfFile: path] autorelease];
-
-    [window setMiniwindowImage: [NSApp applicationIconImage]];
-    if ((nil != toc)  && [self doesCoverArtCacheExist]) {
-        NSString *mbid = [self queryMusicbrainzId: [toc objectForKey: @"mbDiscId"]];
-        if ([mbid length] != 0) {
-            NSFileManager *fm = [NSFileManager defaultManager];
-            NSString *basePath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
-            NSString *cacheDir = [basePath stringByAppendingPathComponent: @"CDPlayer"];
-            cacheDir = [cacheDir stringByAppendingPathComponent: @"coverart"];
-            NSString *cacheFile = [cacheDir stringByAppendingPathComponent: [NSString stringWithFormat: @"%@.jpg", mbid]];
-            BOOL isdir;
-            if ([fm fileExistsAtPath: cacheFile isDirectory: &isdir] == NO) {
-                CaaCoverArt caaCA = caa_coverart_new("cdplayer-0.7.0");
-                if (caaCA != NULL) {
-                    CaaImageData imgData = caa_coverart_fetch_front(caaCA, [mbid cString]);
-                    if (imgData) {
-                        int imgSize = caa_imagedata_size(imgData);
-                        if (imgSize != 0) {
-                            NSData *data = [NSData dataWithBytes: caa_imagedata_data(imgData) length: imgSize];
-                            [fm createFileAtPath: cacheFile contents: data attributes:nil];
-                        }
-                    }
-                    caa_imagedata_delete(imgData);
-                }
-                caa_coverart_delete(caaCA);
-            }
-            if ([fm fileExistsAtPath: cacheFile isDirectory: &isdir] == YES) {
-                ASSIGN(pathToFrontImage, cacheFile);
-                image = [[[NSImage alloc] initWithContentsOfFile: cacheFile] autorelease];
-            }
-        }
-    }
-    NSImage *imgCopy = [image copy];
-    [imgCopy setScalesWhenResized: YES];
-    [imgCopy setSize: NSMakeSize(48,48)];
-    [window setMiniwindowImage: imgCopy];
-    RELEASE(imgCopy);
-
-    return image;
-}
-#endif
 
 - (int) numberOfTracksInTOC
 {

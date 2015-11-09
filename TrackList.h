@@ -37,7 +37,7 @@
     NSDictionary *toc;
     NSString *artist;
     NSString *title;
-#ifdef COVERART
+#ifdef MUSICBRAINZ
     NSString *pathToFrontImage;
 #endif
 }
@@ -51,21 +51,13 @@
 - (void) setTOC: (NSDictionary *) newTOC;
 - (void) setPlaysTrack: (int) track andNotify: (BOOL) andNotify;
 
-- (void) queryCddb: (id) sender;
-- (NSString *) createCddbQuery: (NSDictionary *) theTOC;
-- (void) saveCddbResultInCache: (NSString *) discid
-                        cdInfo: (NSDictionary *) cdInfo;
-
 - (NSString *) artist;
 - (NSString *) title;
 - (NSString *) cdTitle;
 - (NSString *) trackTitle: (int) track;
-#ifdef COVERART
-- (NSImage *) getCoverArtFromCache;
-#endif
 
 /**
- * <p>Tries to retrieve cached cddb data for a CD from the local cache.
+ * <p>Tries to retrieve cached disc data for a CD from the local cache.
  * This method is executed exactly once when the CD has been detected.</p>
  * <br />
  * <strong>Inputs</strong><br />
@@ -74,7 +66,7 @@
  * <desc>The cddb ID for the CD.</desc>
  * </deflist>
  */
-- (NSDictionary *) getCddbResultFromCache: (NSString *) discid;
+- (NSDictionary *) getCdInfoFromCache: (NSString *) discid;
 
 - (int) numberOfTracksInTOC;
 
@@ -91,5 +83,23 @@
 + (id) sharedTrackList;
 
 @end
+
+#ifdef CDDB
+@interface TrackList (Cddb)
+
+- (NSDictionary *) queryCddb;
+- (NSString *) createCddbQuery: (NSDictionary *) theTOC;
+- (void) saveCddbResultInCache: (NSString *) discid
+                        cdInfo: (NSDictionary *) cdInfo;
+
+@end
+#endif
+
+#ifdef MUSICBRAINZ
+@interface TrackList (MusicBrainz)
+- (NSDictionary *) queryMusicbrainz;
+- (NSImage *) getCoverArtFromCache;
+@end
+#endif
 
 #endif
