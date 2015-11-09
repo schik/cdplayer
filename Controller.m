@@ -111,10 +111,6 @@
                     action: action
              keyEquivalent: @""];
 
-    [menu addItemWithTitle: _(@"Query CDDB")
-                    action: @selector(queryCddb:)
-             keyEquivalent: @"Q"];
-
     [menu addItemWithTitle: _(@"Windows")
                     action: action
              keyEquivalent: @""];
@@ -272,11 +268,6 @@
 - (void) showPrefPanel: (id)sender
 {
     [[Preferences singleInstance] showPanel: self];
-}
- 
-- (void) queryCddb: (id)sender
-{
-    [[TrackList sharedTrackList] queryCddb: sender];
 }
 
 - (BOOL) validateMenuItem: (NSMenuItem*)item
