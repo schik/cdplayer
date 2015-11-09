@@ -2,7 +2,9 @@
 
 #include <Cynthiune/Preference.h>
 #include "Preferences.h"
+#ifdef CDDB
 #include "FreeDBView.h"
+#endif
 #include "GeneralView.h"
 
 static	Preferences *singleInstance = nil;
@@ -35,13 +37,15 @@ static	Preferences *singleInstance = nil;
 	[panelList addItemWithTitle: [(GeneralView*)module name]];
 	[module release];
 
+#ifdef CDDB
 	module = [FreeDBView singleInstance];
 	if (module) {
 		[modules setObject: module forKey: [(FreeDBView*)module name]];
 	}
 	[panelList addItemWithTitle: [(FreeDBView*)module name]];
 	[module release];
-  
+#endif
+
 	return self;
 }
 
