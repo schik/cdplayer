@@ -3,8 +3,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 
 # Subprojects 
 SUBPROJECTS = \
-	AudioCD \
-	Cddb
+	AudioCD
 
 APP_NAME = CDPlayer
 CDPlayer_APPLICATION_ICON=app.tiff
@@ -17,7 +16,6 @@ CDPlayer_OBJC_FILES = \
 	Preferences.m \
 	TrackList.m \
 	TrackListView.m \
-	FreeDBView.m \
 	GeneralView.m \
 	BundleManager.m \
 	SliderCell.m
@@ -33,9 +31,16 @@ ifneq ($(notifications), no)
     CDPlayer_GUI_LIBS += -lDBusKit
 endif
 
-ifeq ($(coverart), yes)
-    CDPlayer_OBJCFLAGS += -DCOVERART
-    CDPlayer_GUI_LIBS += -lmusicbrainz4 -lcoverart
+ifneq ($(musicbrainz), no)
+    CDPlayer_OBJCFLAGS += -DMUSICBRAINZ
+    CDPlayer_OBJC_FILES += TrackList+MusicBrainz.m
+    SUBPROJECTS += MusicBrainz
+endif
+
+ifeq ($(cddb), yes)
+    CDPlayer_OBJCFLAGS += -DCDDB
+    CDPlayer_OBJC_FILES += TrackList+Cddb.m FreeDBView.m 
+    SUBPROJECTS += Cddb
 endif
 
 # The Resource files to be copied into the app's resources directory
