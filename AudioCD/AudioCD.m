@@ -654,7 +654,7 @@ static int cddb_dec_digit_sum(int n)
 
 - (NSString *) musicBrainzDiscId
 {
-#ifdef COVERART
+#ifdef MUSICBRAINZ
     NSString *result = @"";
     DiscId *discId = discid_new();
 
