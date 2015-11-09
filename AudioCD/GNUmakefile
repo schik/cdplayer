@@ -17,8 +17,8 @@ ADDITIONAL_INCLUDE_DIRS += -I..
 
 ADDITIONAL_LIBS := -lcdio -lcdio_cdda -lcdio_paranoia
 
-ifeq ($(coverart), yes)
-    ADDITIONAL_OBJCFLAGS += -DCOVERART
+ifneq ($(musicbrainz), no)
+    ADDITIONAL_OBJCFLAGS += -DMUSICBRAINZ
     ADDITIONAL_LIBS += -ldiscid
 endif
 
