@@ -23,10 +23,10 @@
 
 
 #include <unistd.h>
+#include <discid/discid.h>
+#include <cdio/cdtext.h>
 
 #include "AudioCD.h"
-
-#include <discid/discid.h>
 
 static BOOL exitThread = NO;
 static BOOL pollThreadRunning = NO;
@@ -129,27 +129,27 @@ static BOOL readerThreadRunning = NO;
         return nil;
     }
 
-    tracks = [NSMutableArray arrayWithCapacity: drive->tracks];
-    for (i = 1; i <= drive->tracks; i++) {
-        NSMutableDictionary *track = [NSMutableDictionary dictionaryWithCapacity: 5];
-        lsn_t start = cdda_track_firstsector(drive, i);
-        lsn_t len = cdda_track_lastsector(drive, i) - start + 1;
+    [toc setObject: foundDevice forKey: @"device"];
 
-        [track setObject: _(@"Unknown") forKey: @"artist"];
-        [track setObject: [NSString stringWithFormat: _(@"Track%d"), i] forKey: @"title"];
+    NSString *cdArtist = _(@"Unknown");
+    NSString *cdTitle = _(@"Unknown");
 
-        [track setObject: [NSString stringWithFormat: @"%d", len]
-            forKey: @"length"];
-        [track setObject: [NSString stringWithFormat: @"%d", start + CD_MSF_OFFSET]
-            forKey: @"offset"];
-        [track setObject: cdio_cddap_track_audiop(drive, i)?@"audio":@"data"
-            forKey: @"type"];
-        [tracks addObject: track];
+#ifdef CDTEXT
+    cdtext_t *p_cdtext = cdio_get_cdtext(drive->p_cdio, 0);
+    const char *text = cdtext_get_const(CDTEXT_PERFORMER, p_cdtext);
+    if (text != NULL) {
+        cdArtist = [NSString stringWithCString: text];
     }
 
-    [toc setObject: foundDevice forKey: @"device"];
-    [toc setObject: _(@"Unknown") forKey: @"artist"];
-    [toc setObject: _(@"Unknown") forKey: @"title"];
+    text = cdtext_get_const(CDTEXT_TITLE, p_cdtext);
+    if (text != NULL) {
+        cdTitle = [NSString stringWithCString: text];
+    }
+    cdtext_destroy(p_cdtext);
+#endif
+
+    [toc setObject: cdArtist forKey: @"artist"];
+    [toc setObject: cdTitle forKey: @"title"];
 
     [toc setObject: [NSString stringWithFormat: @"%08X", [self cddbDiskid]]
         forKey: @"cddbid"];
@@ -159,6 +159,41 @@ static BOOL readerThreadRunning = NO;
         forKey: @"discLength"];
     [toc setObject: [NSString stringWithFormat: @"%d", drive->tracks]
         forKey: @"numberOfTracks"];
+
+    tracks = [NSMutableArray arrayWithCapacity: drive->tracks];
+    for (i = 1; i <= drive->tracks; i++) {
+        NSMutableDictionary *track = [NSMutableDictionary dictionaryWithCapacity: 5];
+        lsn_t start = cdda_track_firstsector(drive, i);
+        lsn_t len = cdda_track_lastsector(drive, i) - start + 1;
+
+        NSString *artist = cdArtist;
+        NSString *title = [NSString stringWithFormat: _(@"Track%d"), i];
+
+#ifdef CDTEXT
+        cdtext_t *p_cdtext = cdio_get_cdtext(drive->p_cdio, i);
+        text = cdtext_get_const(CDTEXT_PERFORMER, p_cdtext);
+        if (text != NULL) {
+            artist = [NSString stringWithCString: text];
+        }
+
+        text = cdtext_get_const(CDTEXT_TITLE, p_cdtext);
+        if (text != NULL) {
+            title = [NSString stringWithCString: text encoding: NSISOLatin1StringEncoding];
+        }
+        cdtext_destroy(p_cdtext);
+#endif
+
+        [track setObject: artist forKey: @"artist"];
+        [track setObject: title forKey: @"title"];
+
+        [track setObject: [NSString stringWithFormat: @"%d", len]
+            forKey: @"length"];
+        [track setObject: [NSString stringWithFormat: @"%d", start + CD_MSF_OFFSET]
+            forKey: @"offset"];
+        [track setObject: cdio_cddap_track_audiop(drive, i)?@"audio":@"data"
+            forKey: @"type"];
+        [tracks addObject: track];
+    }
     [toc setObject: tracks forKey: @"tracks"];
 
     return toc;

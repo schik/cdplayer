@@ -31,6 +31,10 @@ ifneq ($(notifications), no)
     CDPlayer_GUI_LIBS += -lDBusKit
 endif
 
+ifneq ($(cdtext), no)
+    CDPlayer_OBJCFLAGS += -DCDTEXT
+endif
+
 ifneq ($(musicbrainz), no)
     CDPlayer_OBJCFLAGS += -DMUSICBRAINZ
     CDPlayer_OBJC_FILES += TrackList+MusicBrainz.m

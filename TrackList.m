@@ -157,34 +157,42 @@ static const long MSG_TIMEOUT = 10000;
          * Try to get locally cached cddb data for the CD.
          */
         NSDictionary *cdInfo = nil;
-        // TODO: CD Text
+        BOOL hasCdText = NO;
 
         if (cdInfo == nil) {
             // try to read (legacy) cache file
             cdInfo = [self getCdInfoFromCache: [toc objectForKey: @"cddbid"]];
         }
-#ifdef MUSICBRAINZ
+#ifdef CDTEXT
         if (cdInfo == nil) {
-            cdInfo = [self queryMusicbrainz];
+            // check for CD-TEXT
+            NSString *value = [toc objectForKey: @"artist"];
+            if ((nil != value) && ![value isEqualToString: _(@"Unknown")]) {
+                // assume CD-TEXT if artist name is present
+                NSDebugLog(@"has cd text");
+                hasCdText = YES;
+            }
         }
+#endif
+        if (NO == hasCdText) {
+#ifdef MUSICBRAINZ
+            if (cdInfo == nil) {
+                cdInfo = [self queryMusicbrainz];
+            }
 #endif
 #ifdef CDDB
-        if (cdInfo == nil) {
-            // Automatically query CDDB if disc is present
-            cdInfo = [self queryCddb];
-        }
+            if (cdInfo == nil) {
+                // Automatically query CDDB if disc is present
+                cdInfo = [self queryCddb];
+            }
 #endif
+        }
         if (cdInfo != nil) {
             int i;
-            NSString *dspTitle;
             NSArray *tracks;
  
             ASSIGN(artist, [[cdInfo objectForKey: @"artists"] objectAtIndex: 0]);
             ASSIGN(title, [cdInfo objectForKey: @"album"]);
- 
-            dspTitle = [NSString stringWithFormat: @"%@ - %@", artist, title];
- 
-            [titleField setStringValue: dspTitle];
  
             tracks = [toc objectForKey: @"tracks"];
  
@@ -194,11 +202,13 @@ static const long MSG_TIMEOUT = 10000;
                 [[tracks objectAtIndex: i] setObject: [[cdInfo objectForKey: @"artists"] objectAtIndex: i]
                                             forKey: @"artist"];
             }
+            RELEASE(cdInfo);
         } else {
-            artist = [[NSString alloc] initWithString: _(@"Unknown")];
-            title = [[NSString alloc] initWithString: _(@"Unknown")];
-            [titleField setStringValue: [NSString stringWithFormat: @"%@: %@", _(@"CD"), [toc objectForKey: @"cddbid"]]];
+            ASSIGN(artist, [toc objectForKey: @"artist"]);
+            ASSIGN(title, [toc objectForKey: @"title"]);
         }
+ 
+        [titleField setStringValue: [NSString stringWithFormat: @"%@ - %@", artist, title]];
     }
 
     [trackListView reloadData];
