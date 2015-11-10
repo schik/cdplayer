@@ -44,6 +44,12 @@ o As of version 0.8.0, CDPlayer uses the Musicbrainz service to retrieve disc
   Cddb is turned off by default. To turn on Cddb support do:
         make cddb=yes
 
+o As of version 0,8,0, CDPlayer supports reading CD-TEXT. If an audio CD
+  contains respective information, CDPlayer does not query Musicbrainz or Cddb.
+  As the CD-TEXT feature can be relatively slow, you can switch it off if you
+  don't want it by building like this:
+        make cdtext=no
+
 o As of version 0.7.0, CDPlayer is able to display cover art, i.e. the front
   cover of the currently played CD is displayed in the main window. This
   feature is integrated into the Musicbrainz bundle and automatically available.

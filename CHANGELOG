@@ -8,6 +8,7 @@ Version 0.8.0
 - The replacement to request CD information is Musicbrainz which is
   accessed via the Musicbrainz bundle. This bundle also retrieves cover
   art.
+- Added support for CD-TEXT.
 - Disc information is no longer cached.
 
 Version 0.7.0
